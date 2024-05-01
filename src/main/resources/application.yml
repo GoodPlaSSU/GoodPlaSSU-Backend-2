@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    group:
+      common:
+        - db
+        - security
+      dev:
+        - common
+      prod:
+        - common
+      test:
+        - common
+
+logging:
+  level:
+    sql: debug
