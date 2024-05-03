@@ -39,7 +39,5 @@ public class Board {
 	@LastModifiedDate
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
-	private boolean tag;
-	private String writerName;
-	private String writerPortrait;
+	private boolean tag;	// 0: 선행게시판, 1: 참여게시판
 }
