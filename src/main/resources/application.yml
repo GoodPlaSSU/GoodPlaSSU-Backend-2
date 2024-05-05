@@ -6,8 +6,10 @@ spring:
         - security
       dev:
         - common
+        - openapi
       prod:
         - common
+        - openapi
       test:
         - common
 

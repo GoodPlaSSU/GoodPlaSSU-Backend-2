@@ -1,6 +1,7 @@
 package com.ssu.goodplassu.board.controller;
 
 import com.ssu.goodplassu.board.dto.BoardListResponse;
+import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/boards")
-public class BoardController {
+public class BoardController implements BoardApi {
 	private final BoardService boardService;
 
 	@GetMapping("")
