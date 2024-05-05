@@ -1,5 +1,6 @@
 package com.ssu.goodplassu.board.service;
 
+import com.ssu.goodplassu.board.dto.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.BoardListResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
@@ -38,5 +39,10 @@ public class BoardService {
 					cheer
 			);
 		}).collect(Collectors.toList());
+	}
+
+	public BoardDetailResponse findBoardById(final Long postId) {
+		Board board = boardRepository.findById(postId).orElse(null);
+		return BoardDetailResponse.of(board, board.getMember());
 	}
 }

@@ -7,10 +7,7 @@ import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,9 +19,9 @@ public class BoardController implements BoardApi {
 
 	@GetMapping("")
 	public ResponseEntity<?> getBoards(
-			@RequestParam(name = "tag") int tagAsInt,
-			@RequestParam(name = "cursor") String cursor,
-			@RequestParam(name = "user_key", required = false) Long userId
+			@RequestParam(name = "tag") final int tagAsInt,
+			@RequestParam(name = "cursor") final String cursor,
+			@RequestParam(name = "user_key", required = false) final Long userId
 	) {
 		// 0: 선행게시판, 1: 참여게시판
 		boolean tag = tagAsInt == 1 ? true : false;
@@ -37,5 +34,10 @@ public class BoardController implements BoardApi {
 						boardListResponse
 				)
 		);
+	}
+
+	@GetMapping("/{postId}")
+	public ResponseEntity<?> getBoardById(@PathVariable(value = "postId") final Long postId) {
+		return null;
 	}
 }
