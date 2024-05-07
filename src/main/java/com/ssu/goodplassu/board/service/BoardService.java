@@ -45,6 +45,9 @@ public class BoardService {
 	@Transactional
 	public BoardDetailResponse findBoardById(final Long postId) {
 		Board board = boardRepository.findById(postId).orElse(null);
+		if (board == null) {
+			return null;
+		}
 		board.increaseViewCount();
 		Member member = board.getMember();
 		member.increaseTotalPoint();

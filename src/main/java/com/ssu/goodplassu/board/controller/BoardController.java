@@ -40,10 +40,13 @@ public class BoardController implements BoardApi {
 	@GetMapping("/{postId}")
 	public ResponseEntity<?> getBoardById(@PathVariable(value = "postId") final Long postId) {
 		BoardDetailResponse boardDetailResponse = boardService.findBoardById(postId);
+		if (boardDetailResponse == null) {
+			return ResponseEntity.notFound().build();
+		}
 		return ResponseEntity.ok(
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
-						"게시물을 조회했습니다.", null, null,
+						"게시물을 조회했습니다.",
 						boardDetailResponse
 				)
 		);
