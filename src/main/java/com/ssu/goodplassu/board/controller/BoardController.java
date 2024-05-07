@@ -31,7 +31,7 @@ public class BoardController implements BoardApi {
 		return ResponseEntity.ok(
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
-						"게시물 리스트를 불러왔습니다.", null, null,
+						"게시물 리스트를 불러왔습니다.",
 						boardListResponse
 				)
 		);
