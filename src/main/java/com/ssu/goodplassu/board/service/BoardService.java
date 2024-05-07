@@ -1,10 +1,12 @@
 package com.ssu.goodplassu.board.service;
 
+import com.ssu.goodplassu.board.dto.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.BoardListResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.entity.repository.CheerRepository;
+import com.ssu.goodplassu.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,5 +40,18 @@ public class BoardService {
 					cheer
 			);
 		}).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public BoardDetailResponse findBoardById(final Long postId) {
+		Board board = boardRepository.findById(postId).orElse(null);
+		if (board == null) {
+			return null;
+		}
+		board.increaseViewCount();
+		Member member = board.getMember();
+		member.increaseTotalPoint();
+		member.increaseMonthPoint();
+		return BoardDetailResponse.of(board, member);
 	}
 }
