@@ -1,5 +1,6 @@
 package com.ssu.goodplassu.board.controller;
 
+import com.ssu.goodplassu.board.dto.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.BoardListResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
@@ -38,6 +39,13 @@ public class BoardController implements BoardApi {
 
 	@GetMapping("/{postId}")
 	public ResponseEntity<?> getBoardById(@PathVariable(value = "postId") final Long postId) {
-		return null;
+		BoardDetailResponse boardDetailResponse = boardService.findBoardById(postId);
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"게시물을 조회했습니다.", null, null,
+						boardDetailResponse
+				)
+		);
 	}
 }

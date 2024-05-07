@@ -22,4 +22,12 @@ public class Member {
 	private String portrait;
 	private Long totalPoint = 0L;
 	private Long monthPoint = 0L;
+
+	public void increaseTotalPoint() {
+		this.totalPoint++;
+	}
+
+	public void increaseMonthPoint() {
+		this.monthPoint++;
+	}
 }

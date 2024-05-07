@@ -40,4 +40,8 @@ public class Board {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 	private boolean tag;	// 0: 선행게시판, 1: 참여게시판
+
+	public void increaseViewCount() {
+		this.viewCount++;
+	}
 }
