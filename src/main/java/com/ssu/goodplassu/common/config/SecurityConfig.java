@@ -1,14 +1,11 @@
 package com.ssu.goodplassu.common.config;
 
 import com.ssu.goodplassu.common.config.auth.service.CustomOAuth2UserService;
-import com.ssu.goodplassu.member.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -26,9 +23,7 @@ public class SecurityConfig {
 		http
 				.cors(c -> c.configure(http))
 				.csrf(c -> c.disable())
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 				.authorizeHttpRequests(a -> a
-						.requestMatchers(new AntPathRequestMatcher("/api/boards", HttpMethod.GET.name())).hasRole(Role.USER.name())
 						.requestMatchers(
 								new MvcRequestMatcher(introspector, "/h2-console/**"),
 								new AntPathRequestMatcher("/**")

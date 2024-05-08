@@ -50,7 +50,7 @@ public class OAuth2Attributes {
 				.nameAttributeKey(userNameAttributeName)
 				.name((String) attributes.get("name"))
 				.email((String) attributes.get("email"))
-				.portrait((String) attributes.get("portrait"))
+				.portrait((String) attributes.get("picture"))
 				.build();
 	}
 
