@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-				.allowedOrigins("http://localhost:3000", "https://goodplassu.netlify.app") // Next.js 애플리케이션의 URL
+				.allowedOrigins("http://localhost:3000", "https://goodplassu.netlify.app")
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
 				.allowCredentials(true)
 				.exposedHeaders(HttpHeaders.LOCATION);
