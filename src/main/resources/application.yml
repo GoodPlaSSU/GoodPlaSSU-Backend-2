@@ -3,7 +3,7 @@ spring:
     group:
       common:
         - db
-        - security
+        - oauth
       dev:
         - common
         - openapi
