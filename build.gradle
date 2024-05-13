@@ -51,6 +51,13 @@ dependencies {
 
 	// OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// Aws Java Sdk S3
+	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.630'
+
+	// Configuring the Annotation Processor
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 tasks.named('test') {

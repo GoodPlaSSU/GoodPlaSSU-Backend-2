@@ -4,6 +4,7 @@ spring:
       common:
         - db
         - oauth
+        - image
       dev:
         - common
         - openapi
