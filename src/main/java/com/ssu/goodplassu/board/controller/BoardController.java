@@ -1,7 +1,9 @@
 package com.ssu.goodplassu.board.controller;
 
-import com.ssu.goodplassu.board.dto.BoardDetailResponse;
-import com.ssu.goodplassu.board.dto.BoardListResponse;
+import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
+import com.ssu.goodplassu.board.dto.response.BoardListResponse;
+import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,6 +51,25 @@ public class BoardController implements BoardApi {
 						HttpStatus.OK.value(),
 						"게시물을 조회했습니다.",
 						boardDetailResponse
+				)
+		);
+	}
+
+	@PostMapping("/")
+	public ResponseEntity<?> createPost(
+			@RequestBody final PostCreateRequest postCreateRequest,
+			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
+	) {
+		PostCreateResponse postCreateResponse = boardService.createPost(postCreateRequest, multipartFiles);
+		if (postCreateResponse == null) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"게시물을 생성했습니다.",
+						postCreateResponse
 				)
 		);
 	}

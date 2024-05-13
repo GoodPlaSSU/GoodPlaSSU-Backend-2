@@ -1,17 +1,24 @@
 package com.ssu.goodplassu.board.service;
 
-import com.ssu.goodplassu.board.dto.BoardDetailResponse;
-import com.ssu.goodplassu.board.dto.BoardListResponse;
+import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
+import com.ssu.goodplassu.board.dto.response.BoardListResponse;
+import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.entity.repository.CheerRepository;
+import com.ssu.goodplassu.image.entity.Image;
+import com.ssu.goodplassu.image.entity.ImageType;
+import com.ssu.goodplassu.image.service.ImageService;
 import com.ssu.goodplassu.member.entity.Member;
+import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +29,8 @@ import java.util.stream.Collectors;
 public class BoardService {
 	private final BoardRepository boardRepository;
 	private final CheerRepository cheerRepository;
+	private final MemberRepository memberRepository;
+	private final ImageService imageService;
 
 	public List<BoardListResponse> findBoardList(final boolean tag, final String cursor, final Long userId) {
 		// 커서 기반 페이지네이션
@@ -53,5 +62,28 @@ public class BoardService {
 		member.increaseTotalPoint();
 		member.increaseMonthPoint();
 		return BoardDetailResponse.of(board, member);
+	}
+
+	@Transactional
+	public PostCreateResponse createPost(final PostCreateRequest postCreateRequest, final List<MultipartFile> multipartFiles) {
+		Member member = memberRepository.findById(postCreateRequest.getWriterId()).orElse(null);
+		if (member == null) {
+			return null;
+		}
+
+		Board board = Board.builder()
+				.member(member)
+				.content(postCreateRequest.getContent())
+				.build();
+
+		List<Image> images = imageService.uploadImages(multipartFiles, ImageType.POST.name(), board.getId());
+		images.forEach(board::addImage);
+
+		boardRepository.save(board);
+
+		member.increaseMonthPoint();
+		member.increaseTotalPoint();
+
+		return PostCreateResponse.of(board);
 	}
 }
