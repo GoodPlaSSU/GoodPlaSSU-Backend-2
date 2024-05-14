@@ -7,30 +7,22 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @RequiredArgsConstructor(access = PRIVATE)
 public class BoardListResponse {
-	// post id, writer portrait, writer name, updated at, content, image1, is_on, cheer_count
 	private final Long id;
-	private final String writer_portrait;
+	private final String writer_profile;
 	private final String writer_name;
 	private final String content;
-	private final String image1;	// 대표 이미지
-	private final boolean is_on;
-	private final Long cheer_count;
-	private final LocalDateTime updated_at;
-	private final String cursor;
+	private final String thumbnail;
+	private final boolean like_on;
+	private final Long like_count;
+	private final LocalDateTime updated_date;
 
 	public static BoardListResponse of(final Board board, final Member member, final Cheer cheer) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-		String formattedDate = formatter.format(board.getCreatedAt());
-		String paddedId = String.format("%010d", board.getId());
-		String cursor = formattedDate + paddedId;
-
 		String imageUrl = "";
 		if (!board.getImages().isEmpty()) {
 			imageUrl = board.getImages().get(0).getUrl(); // 첫 번째 이미지의 URL을 가져옵니다.
@@ -44,8 +36,7 @@ public class BoardListResponse {
 				imageUrl,
 				cheer == null ? false : cheer.isOn(),	// 로그인하지 않은 경우 null -> 좋아요(cheer) 누르지 않은 상태
 				board.getCheerCount(),
-				board.getUpdatedAt(),
-				cursor
+				board.getUpdatedAt()
 		);
 	}
 }

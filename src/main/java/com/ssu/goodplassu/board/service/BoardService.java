@@ -13,7 +13,8 @@ import com.ssu.goodplassu.image.service.ImageService;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,23 +32,25 @@ public class BoardService {
 	private final MemberRepository memberRepository;
 	private final ImageService imageService;
 
-	public List<BoardListResponse> findBoardList(final boolean tag, final String cursor, final Long userId) {
-		// 커서 기반 페이지네이션
-		Pageable pageable = PageRequest.of(0, 10);
-		List<Board> boardList = boardRepository.findBoardListByTagAndCursor(tag, cursor, pageable);
+	public Page<BoardListResponse> findBoardList(final boolean tag, final Long userId, final int page) {
+		Pageable pageable = Pageable.ofSize(10).withPage(page);
+		Page<Board> boardList = boardRepository.findBoardsByTagOrderByCreatedAtDesc(tag, pageable);
 
-		return boardList.stream().map(board -> {
-			// 로그인한 멤버(유저)가 게시물에 좋아요(cheer)를 눌렀는지 확인하기 위함. 로그인하지 않은 상태에서는 null
-			Cheer cheer = null;
-			if (userId != null)
-				cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
+		List<BoardListResponse> filteredBoardList = boardList.stream()
+				.map(board -> {
+					// 로그인한 멤버(유저)가 게시물에 좋아요(cheer)를 눌렀는지 확인하기 위함. 로그인하지 않은 상태에서는 null
+					Cheer cheer = null;
+					if (userId != null)
+						cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
 
-			return BoardListResponse.of(
-					board,
-					board.getMember(),
-					cheer
-			);
-		}).collect(Collectors.toList());
+					return BoardListResponse.of(
+							board,
+							board.getMember(),
+							cheer
+					);
+				}).collect(Collectors.toList());
+
+		return new PageImpl<>(filteredBoardList, pageable, boardList.getTotalElements());
 	}
 
 	@Transactional
