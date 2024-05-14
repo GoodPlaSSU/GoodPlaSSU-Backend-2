@@ -3,7 +3,6 @@ package com.ssu.goodplassu.board.service;
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
 import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
-import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
@@ -65,8 +64,8 @@ public class BoardService {
 	}
 
 	@Transactional
-	public PostCreateResponse createPost(final PostCreateRequest postCreateRequest, final List<MultipartFile> multipartFiles) {
-		Member member = memberRepository.findById(postCreateRequest.getWriterId()).orElse(null);
+	public Long createPost(final PostCreateRequest postCreateRequest, final List<MultipartFile> multipartFiles) {
+		Member member = memberRepository.findById(postCreateRequest.getWriter_id()).orElse(null);
 		if (member == null) {
 			return null;
 		}
@@ -84,6 +83,6 @@ public class BoardService {
 		member.increaseMonthPoint();
 		member.increaseTotalPoint();
 
-		return PostCreateResponse.of(board);
+		return member.getId();
 	}
 }

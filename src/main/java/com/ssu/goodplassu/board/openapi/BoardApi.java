@@ -1,12 +1,15 @@
 package com.ssu.goodplassu.board.openapi;
 
+import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "Board", description = "게시판 관련 API")
 public interface BoardApi {
@@ -37,5 +40,19 @@ public interface BoardApi {
 	@GetMapping("/{postId}")
 	public ResponseEntity<?> getBoardById(
 			@PathVariable(value = "postId") final Long postId
+	);
+
+	@Operation(
+			summary = "게시물 생성",
+			description = "게시판에 새 게시물 생성"
+	)
+	@ApiResponse(
+			responseCode = "201",
+			description = "게시물 생성 성공"
+	)
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> createPost(
+			@RequestBody final PostCreateRequest postCreateRequest,
+			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	);
 }
