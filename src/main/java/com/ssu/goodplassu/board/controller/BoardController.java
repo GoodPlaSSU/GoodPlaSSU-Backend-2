@@ -6,11 +6,10 @@ import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,12 +20,12 @@ public class BoardController implements BoardApi {
 	@GetMapping("")
 	public ResponseEntity<?> getBoards(
 			@RequestParam(name = "tag") final int tagAsInt,
-			@RequestParam(name = "cursor") final String cursor,
+			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(name = "user_key", required = false) final Long userId
 	) {
 		// 0: 선행게시판, 1: 참여게시판
 		boolean tag = tagAsInt == 1 ? true : false;
-		List<BoardListResponse> boardListResponse = boardService.findBoardList(tag, cursor, userId);
+		Page<BoardListResponse> boardListResponse = boardService.findBoardList(tag, userId, page);
 
 		return ResponseEntity.ok(
 				new ResponseDto<>(
