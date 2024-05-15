@@ -25,8 +25,11 @@ import java.util.UUID;
 public class ImageService {
 	private final NcpS3Properties ncpS3Properties;
 	private final AmazonS3Client amazonS3Client;
-	public List<Image> uploadImages(final List<MultipartFile> multipartFiles, final String filePath,
-									final Long postId) {
+
+	public List<Image> uploadImages(
+			final List<MultipartFile> multipartFiles,
+			final String filePath
+	) {
 		List<Image> images = new ArrayList<>();
 
 		for (MultipartFile multipartFile : multipartFiles) {
@@ -35,7 +38,7 @@ public class ImageService {
 			objectMetadata.setContentType(multipartFile.getContentType());
 
 			String originalFileName = multipartFile.getOriginalFilename();
-			String newFileName = filePath + "_" + postId.toString() + "_" + UUID.randomUUID() + "_" + originalFileName;
+			String newFileName = filePath + "_" + LocalDateTime.now() + "_" + UUID.randomUUID() + "_" + originalFileName;
 			String folderName = createFolderNameWithTodayDate();
 			String keyName = filePath + "/" + folderName + "/" + newFileName;
 			String uploadUrl = "";

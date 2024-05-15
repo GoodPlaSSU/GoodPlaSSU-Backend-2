@@ -1,4 +1,4 @@
-package com.ssu.goodplassu.cheer.entity.repository;
+package com.ssu.goodplassu.cheer.repository;
 
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import org.springframework.data.jpa.repository.JpaRepository;

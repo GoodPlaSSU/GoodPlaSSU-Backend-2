@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
 public class Board {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -41,6 +42,16 @@ public class Board {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 	private boolean tag;	// 0: 선행게시판, 1: 참여게시판
+
+	public Board(
+			Member member,
+			String content,
+			boolean tag
+	) {
+		this.member = member;
+		this.content = content;
+		this.tag = tag;
+	}
 
 	public void increaseViewCount() {
 		this.viewCount++;

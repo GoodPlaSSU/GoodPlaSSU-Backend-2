@@ -6,6 +6,9 @@ import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -59,7 +62,7 @@ public class BoardController implements BoardApi {
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> createPost(
-			@RequestBody final PostCreateRequest postCreateRequest,
+			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostCreateRequest postCreateRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	) {
 		Long memberId= boardService.createPost(postCreateRequest, multipartFiles);

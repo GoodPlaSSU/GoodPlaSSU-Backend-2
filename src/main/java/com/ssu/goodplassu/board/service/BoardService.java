@@ -6,7 +6,7 @@ import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
-import com.ssu.goodplassu.cheer.entity.repository.CheerRepository;
+import com.ssu.goodplassu.cheer.repository.CheerRepository;
 import com.ssu.goodplassu.image.entity.Image;
 import com.ssu.goodplassu.image.entity.ImageType;
 import com.ssu.goodplassu.image.service.ImageService;
@@ -67,19 +67,25 @@ public class BoardService {
 	}
 
 	@Transactional
-	public Long createPost(final PostCreateRequest postCreateRequest, final List<MultipartFile> multipartFiles) {
+	public Long createPost(
+			final PostCreateRequest postCreateRequest,
+			final List<MultipartFile> multipartFiles
+	) {
 		Member member = memberRepository.findById(postCreateRequest.getWriter_id()).orElse(null);
 		if (member == null) {
 			return null;
 		}
 
-		Board board = Board.builder()
-				.member(member)
-				.content(postCreateRequest.getContent())
-				.build();
+		Board board = new Board(
+				member,
+				postCreateRequest.getContent(),
+				postCreateRequest.isTag()
+		);
 
-		List<Image> images = imageService.uploadImages(multipartFiles, ImageType.POST.name(), board.getId());
-		images.forEach(board::addImage);
+		if (multipartFiles != null) {
+			List<Image> images = imageService.uploadImages(multipartFiles, ImageType.POST.name());
+			images.forEach(board::addImage);
+		}
 
 		boardRepository.save(board);
 
