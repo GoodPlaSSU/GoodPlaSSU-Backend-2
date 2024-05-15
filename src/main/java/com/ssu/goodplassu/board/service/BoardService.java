@@ -7,6 +7,8 @@ import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.repository.CheerRepository;
+import com.ssu.goodplassu.comment.entity.Comment;
+import com.ssu.goodplassu.comment.repository.CommentRepository;
 import com.ssu.goodplassu.image.entity.Image;
 import com.ssu.goodplassu.image.entity.ImageType;
 import com.ssu.goodplassu.image.service.ImageService;
@@ -30,6 +32,7 @@ public class BoardService {
 	private final BoardRepository boardRepository;
 	private final CheerRepository cheerRepository;
 	private final MemberRepository memberRepository;
+	private final CommentRepository commentRepository;
 	private final ImageService imageService;
 
 	public Page<BoardListResponse> findBoardList(final boolean tag, final Long userId, final int page) {
@@ -43,10 +46,13 @@ public class BoardService {
 					if (userId != null)
 						cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
 
+					List<Comment> commentList = commentRepository.findAllByBoard(board);
+
 					return BoardListResponse.of(
 							board,
 							board.getMember(),
-							cheer
+							cheer,
+							commentList.size()
 					);
 				}).collect(Collectors.toList());
 
