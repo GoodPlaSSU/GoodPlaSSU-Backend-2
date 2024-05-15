@@ -21,8 +21,14 @@ public class BoardListResponse {
 	private final boolean like_on;
 	private final Long like_count;
 	private final LocalDateTime updated_date;
+	private final int comment_count;
 
-	public static BoardListResponse of(final Board board, final Member member, final Cheer cheer) {
+	public static BoardListResponse of(
+			final Board board,
+			final Member member,
+			final Cheer cheer,
+			final int commentCnt
+	) {
 		String imageUrl = "";
 		if (!board.getImages().isEmpty()) {
 			imageUrl = board.getImages().get(0).getUrl(); // 첫 번째 이미지의 URL을 가져옵니다.
@@ -36,7 +42,8 @@ public class BoardListResponse {
 				imageUrl,
 				cheer == null ? false : cheer.isOn(),	// 로그인하지 않은 경우 null -> 좋아요(cheer) 누르지 않은 상태
 				board.getCheerCount(),
-				board.getUpdatedAt()
+				board.getUpdatedAt(),
+				commentCnt
 		);
 	}
 }
