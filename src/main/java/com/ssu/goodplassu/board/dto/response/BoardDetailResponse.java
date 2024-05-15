@@ -1,6 +1,7 @@
-package com.ssu.goodplassu.board.dto;
+package com.ssu.goodplassu.board.dto.response;
 
 import com.ssu.goodplassu.board.entity.Board;
+import com.ssu.goodplassu.image.dto.response.ImagesResponse;
 import com.ssu.goodplassu.member.entity.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,7 @@ public class BoardDetailResponse {
 	private final Long writer_id;
 	private final String writer_name;
 	private final String writer_portrait;
-	private final String image1;
-	private final String image2;
-	private final String image3;
-	private final String image4;
+	private final ImagesResponse imagesResponse;
 	private final LocalDateTime updated_at;
 	private final Long cheer_count;
 
@@ -30,10 +28,7 @@ public class BoardDetailResponse {
 			member.getId(),
 			member.getName(),
 			member.getPortrait(),
-			board.getImage1(),
-			board.getImage2(),
-			board.getImage3(),
-			board.getImage4(),
+			ImagesResponse.of(board.getImages()),
 			board.getUpdatedAt(),
 			board.getCheerCount()
 		);

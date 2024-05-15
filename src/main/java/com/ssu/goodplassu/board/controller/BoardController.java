@@ -1,15 +1,24 @@
 package com.ssu.goodplassu.board.controller;
 
-import com.ssu.goodplassu.board.dto.BoardDetailResponse;
-import com.ssu.goodplassu.board.dto.BoardListResponse;
+import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
+import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,5 +58,20 @@ public class BoardController implements BoardApi {
 						boardDetailResponse
 				)
 		);
+	}
+
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> createPost(
+			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostCreateRequest postCreateRequest,
+			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
+	) {
+		Long memberId= boardService.createPost(postCreateRequest, multipartFiles);
+		if (memberId == null) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		return ResponseEntity.created(
+				URI.create(memberId.toString())
+		).build();
 	}
 }
