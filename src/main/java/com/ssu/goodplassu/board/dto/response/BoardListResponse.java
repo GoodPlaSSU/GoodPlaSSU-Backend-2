@@ -1,4 +1,4 @@
-package com.ssu.goodplassu.board.dto;
+package com.ssu.goodplassu.board.dto.response;
 
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.cheer.entity.Cheer;
@@ -23,12 +23,17 @@ public class BoardListResponse {
 	private final LocalDateTime updated_date;
 
 	public static BoardListResponse of(final Board board, final Member member, final Cheer cheer) {
+		String imageUrl = "";
+		if (!board.getImages().isEmpty()) {
+			imageUrl = board.getImages().get(0).getUrl(); // 첫 번째 이미지의 URL을 가져옵니다.
+		}
+
 		return new BoardListResponse(
 				board.getId(),
 				member.getPortrait(),
 				member.getName(),
 				board.getContent(),
-				board.getImage1(),
+				imageUrl,
 				cheer == null ? false : cheer.isOn(),	// 로그인하지 않은 경우 null -> 좋아요(cheer) 누르지 않은 상태
 				board.getCheerCount(),
 				board.getUpdatedAt()
