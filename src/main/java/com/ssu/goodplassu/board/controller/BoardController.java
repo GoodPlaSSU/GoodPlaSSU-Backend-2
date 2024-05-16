@@ -3,6 +3,7 @@ package com.ssu.goodplassu.board.controller;
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
 import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
+import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -49,8 +49,17 @@ public class BoardController implements BoardApi {
 	public ResponseEntity<?> getBoardById(@PathVariable(value = "postId") final Long postId) {
 		BoardDetailResponse boardDetailResponse = boardService.findBoardById(postId);
 		if (boardDetailResponse == null) {
-			return ResponseEntity.notFound().build();
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.NOT_FOUND.value(),
+							"게시물 조회에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.NOT_FOUND
+			);
+//			return ResponseEntity.notFound().build();
 		}
+
 		return ResponseEntity.ok(
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
@@ -65,13 +74,25 @@ public class BoardController implements BoardApi {
 			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostCreateRequest postCreateRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	) {
-		Long memberId= boardService.createPost(postCreateRequest, multipartFiles);
-		if (memberId == null) {
-			return ResponseEntity.badRequest().build();
+		PostCreateResponse postCreateResponse = boardService.createPost(postCreateRequest, multipartFiles);
+		if (postCreateResponse == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"게시물 생성에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+//			return ResponseEntity.badRequest().build();
 		}
 
-		return ResponseEntity.created(
-				URI.create(memberId.toString())
-		).build();
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.CREATED.value(),
+						"게시물을 생성했습니다.",
+						postCreateResponse
+				)
+		);
 	}
 }

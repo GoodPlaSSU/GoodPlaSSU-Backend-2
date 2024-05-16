@@ -3,6 +3,7 @@ package com.ssu.goodplassu.board.service;
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
 import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
+import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
@@ -76,7 +77,7 @@ public class BoardService {
 	}
 
 	@Transactional
-	public Long createPost(
+	public PostCreateResponse createPost(
 			final PostCreateRequest postCreateRequest,
 			final List<MultipartFile> multipartFiles
 	) {
@@ -96,11 +97,11 @@ public class BoardService {
 			images.forEach(board::addImage);
 		}
 
-		boardRepository.save(board);
+		Board boardResult = boardRepository.save(board);
 
 		member.increaseMonthPoint();
 		member.increaseTotalPoint();
 
-		return member.getId();
+		return PostCreateResponse.of(boardResult.getId());
 	}
 }
