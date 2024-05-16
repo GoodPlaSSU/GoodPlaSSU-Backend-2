@@ -17,7 +17,9 @@ public class Member {
 	private String name;
 	private String email;
 	private String portrait;
+	@Builder.Default
 	private Long totalPoint = 0L;
+	@Builder.Default
 	private Long monthPoint = 0L;
 	@Enumerated(EnumType.STRING)
 	private Role role;

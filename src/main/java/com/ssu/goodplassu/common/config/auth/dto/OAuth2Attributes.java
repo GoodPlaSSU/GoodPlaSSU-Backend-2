@@ -61,8 +61,6 @@ public class OAuth2Attributes {
 				.email(email)
 				.portrait(portrait)
 				.role(Role.USER)
-				.monthPoint(0L)
-				.totalPoint(0L)
 				.build();
 	}
 }
