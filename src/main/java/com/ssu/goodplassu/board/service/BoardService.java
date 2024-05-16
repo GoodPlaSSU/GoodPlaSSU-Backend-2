@@ -65,10 +65,13 @@ public class BoardService {
 		if (board == null) {
 			return null;
 		}
+
 		board.increaseViewCount();
+
 		Member member = board.getMember();
 		member.increaseTotalPoint();
 		member.increaseMonthPoint();
+
 		return BoardDetailResponse.of(board, member);
 	}
 

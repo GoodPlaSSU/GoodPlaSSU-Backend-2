@@ -20,7 +20,7 @@ public class BoardListResponse {
 	private final String thumbnail;
 	private final boolean like_on;
 	private final Long like_count;
-	private final LocalDateTime updated_date;
+	private final LocalDateTime updated_at;
 	private final int comment_count;
 
 	public static BoardListResponse of(
