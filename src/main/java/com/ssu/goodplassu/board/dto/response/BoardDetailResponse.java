@@ -17,10 +17,10 @@ public class BoardDetailResponse {
 	private final Long id;
 	private final Long writer_id;
 	private final String writer_name;
-	private final String writer_portrait;
-	private final ImagesResponse imagesResponse;
+	private final String writer_profile;
+	private final ImagesResponse images;
 	private final LocalDateTime updated_at;
-	private final Long cheer_count;
+	private final Long like_count;
 
 	public static BoardDetailResponse of(final Board board, final Member member) {
 		return new BoardDetailResponse(
