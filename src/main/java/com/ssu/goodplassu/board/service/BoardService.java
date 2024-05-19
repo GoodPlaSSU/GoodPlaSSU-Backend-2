@@ -1,9 +1,11 @@
 package com.ssu.goodplassu.board.service;
 
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.request.PostModifyRequest;
 import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
+import com.ssu.goodplassu.board.dto.response.PostModifyResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.entity.Cheer;
@@ -108,5 +110,40 @@ public class BoardService {
 		member.increaseTotalPoint();
 
 		return PostCreateResponse.of(boardResult.getId());
+	}
+
+	@Transactional
+	public PostModifyResponse modifyPost(
+			final Long postId,
+			final PostModifyRequest postModifyRequest,
+			final List<MultipartFile> multipartFiles
+	) {
+		Board board = boardRepository.findById(postId).orElse(null);
+		if (board == null) {
+			return null;
+		}
+
+		if (multipartFiles != null) {
+			List<Image> images = imageService.uploadImages(multipartFiles, ImageType.POST.name());
+			images.forEach(board::addImage);
+		}
+
+		if (postModifyRequest.getDelete_images() != null) {
+			postModifyRequest.getDelete_images().stream()
+					.map(imageUrl -> imageService.getImageIdAndDeleteImage(imageUrl))
+					.forEach(imageId -> imageService.deleteImageInS3Bucket(imageId));
+		}
+
+		board.updateData(postModifyRequest.getContent(), postModifyRequest.isTag());
+
+		return PostModifyResponse.of(board);
+	}
+
+	private void deleteImages(final List<String> deletedImagesUrl) {
+		for (String imageUrl : deletedImagesUrl) {
+			String imageId = imageService.getImageIdAndDeleteImage(
+					imageUrl); // ImageRepository 이미지 삭제 및 S3 버켓 이미지 ID 반환
+			imageService.deleteImageInS3Bucket(imageId); // S3 버켓 이미지 삭제
+		}
 	}
 }

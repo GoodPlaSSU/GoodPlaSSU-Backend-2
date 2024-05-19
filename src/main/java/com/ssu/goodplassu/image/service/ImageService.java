@@ -2,11 +2,13 @@ package com.ssu.goodplassu.image.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssu.goodplassu.image.config.NcpS3Properties;
 import com.ssu.goodplassu.image.entity.Image;
+import com.ssu.goodplassu.image.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class ImageService {
 	private final NcpS3Properties ncpS3Properties;
 	private final AmazonS3Client amazonS3Client;
+	private final ImageRepository imageRepository;
 
 	public List<Image> uploadImages(
 			final List<MultipartFile> multipartFiles,
@@ -80,5 +83,28 @@ public class ImageService {
 		String month = String.format("%02d", now.getMonthValue());
 
 		return year + "/" + month;
+	}
+
+	public void deleteImageInS3Bucket(final String keyName) {
+		try {
+			amazonS3Client.deleteObject(ncpS3Properties.getS3().getBucketName(), keyName);
+		} catch (AmazonS3Exception e) {
+			e.printStackTrace();
+			throw new AmazonS3Exception(e.getMessage());
+		} catch (SdkClientException e) {
+			e.printStackTrace();
+			throw new SdkClientException(e.getMessage());
+		}
+	}
+
+	public String getImageIdAndDeleteImage(final String imageUrl) {
+		Image image = imageRepository.findByUrl(imageUrl).orElse(null);
+		if (image == null) {
+			return null;
+		}
+
+		imageRepository.delete(image);
+
+		return image.getImageId();
 	}
 }

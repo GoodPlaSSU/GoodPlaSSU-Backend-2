@@ -61,4 +61,9 @@ public class Board {
 		images.add(image);
 		image.setBoard(this);
 	}
+
+	public void updateData(String content, boolean tag) {
+		this.content = content;
+		this.tag = tag;
+	}
 }

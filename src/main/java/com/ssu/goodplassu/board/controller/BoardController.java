@@ -1,9 +1,11 @@
 package com.ssu.goodplassu.board.controller;
 
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.request.PostModifyRequest;
 import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
+import com.ssu.goodplassu.board.dto.response.PostModifyResponse;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
@@ -92,6 +94,33 @@ public class BoardController implements BoardApi {
 						HttpStatus.CREATED.value(),
 						"게시물을 생성했습니다.",
 						postCreateResponse
+				)
+		);
+	}
+
+	@PostMapping(path = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> modifyPost(
+			@PathVariable("postId") final Long postId,
+			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostModifyRequest postModifyRequest,
+			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
+	) {
+		PostModifyResponse postModifyResponse = boardService.modifyPost(postId, postModifyRequest, multipartFiles);
+		if (postModifyResponse == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"게시물 수정에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"게시물을 수정했습니다.",
+						postModifyResponse
 				)
 		);
 	}
