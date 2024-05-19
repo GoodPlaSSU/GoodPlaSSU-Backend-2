@@ -35,4 +35,14 @@ public class Comment {
 	@CreatedDate
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
+
+	public Comment(
+			Member member,
+			Board board,
+			String content
+	) {
+		this.member = member;
+		this.board = board;
+		this.content = content;
+	}
 }
