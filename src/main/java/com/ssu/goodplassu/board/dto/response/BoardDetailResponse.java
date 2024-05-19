@@ -1,12 +1,14 @@
 package com.ssu.goodplassu.board.dto.response;
 
 import com.ssu.goodplassu.board.entity.Board;
+import com.ssu.goodplassu.comment.dto.response.CommentListResponse;
 import com.ssu.goodplassu.image.dto.response.ImagesResponse;
 import com.ssu.goodplassu.member.entity.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -21,8 +23,9 @@ public class BoardDetailResponse {
 	private final ImagesResponse images;
 	private final LocalDateTime updated_at;
 	private final Long like_count;
+	private final List<CommentListResponse> comments;
 
-	public static BoardDetailResponse of(final Board board, final Member member) {
+	public static BoardDetailResponse of(final Board board, final Member member, final List<CommentListResponse> commentListResponseList) {
 		return new BoardDetailResponse(
 			board.getId(),
 			member.getId(),
@@ -30,7 +33,8 @@ public class BoardDetailResponse {
 			member.getPortrait(),
 			ImagesResponse.of(board.getImages()),
 			board.getUpdatedAt(),
-			board.getCheerCount()
+			board.getCheerCount(),
+			commentListResponseList
 		);
 	}
 }
