@@ -20,6 +20,7 @@ public class BoardDetailResponse {
 	private final Long writer_id;
 	private final String writer_name;
 	private final String writer_profile;
+	private final String content;
 	private final ImagesResponse images;
 	private final LocalDateTime updated_at;
 	private final Long like_count;
@@ -31,6 +32,7 @@ public class BoardDetailResponse {
 			member.getId(),
 			member.getName(),
 			member.getPortrait(),
+			board.getContent(),
 			ImagesResponse.of(board.getImages()),
 			board.getUpdatedAt(),
 			board.getCheerCount(),
