@@ -1,6 +1,7 @@
 package com.ssu.goodplassu.board.openapi;
 
 import com.ssu.goodplassu.board.dto.request.PostCreateRequest;
+import com.ssu.goodplassu.board.dto.request.PostModifyRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,6 +56,20 @@ public interface BoardApi {
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> createPost(
 			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostCreateRequest postCreateRequest,
+			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
+	);
+
+	@Operation(
+			summary = "게시물 수정",
+			description = "기존 게시물 수정"
+	)
+	@ApiResponse(responseCode = "200", description = "게시물 수정 성공")
+	@ApiResponse(responseCode = "400", description = "게시물 수정 실패")
+	@ApiResponse(responseCode = "500", description = "서버 에러")
+	@PostMapping(path = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> modifyPost(
+			@PathVariable("postId") final Long postId,
+			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostModifyRequest postModifyRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	);
 }
