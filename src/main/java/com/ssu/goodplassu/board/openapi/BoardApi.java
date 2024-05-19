@@ -34,13 +34,12 @@ public interface BoardApi {
 	);
 
 	@Operation(
-			summary = "게시판 게시물 조회",
-			description = "게시물 아이디로 게시판의 게시물 내용 조회"
+			summary = "게시물 조회",
+			description = "게시물 아이디로 게시물 내용 조회"
 	)
-	@ApiResponse(
-			responseCode = "200",
-			description = "게시물 조회 성공"
-	)
+	@ApiResponse(responseCode = "200", description = "게시물 조회 성공")
+	@ApiResponse(responseCode = "400", description = "게시물 조회 실패")
+	@ApiResponse(responseCode = "500", description = "서버 에러")
 	@GetMapping("/{postId}")
 	public ResponseEntity<?> getBoardById(
 			@PathVariable(value = "postId") final Long postId
