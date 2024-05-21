@@ -2,6 +2,7 @@ package com.ssu.goodplassu.member.controller;
 
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import com.ssu.goodplassu.member.dto.response.HighestMonthPointResponse;
+import com.ssu.goodplassu.member.dto.response.HighestTotalPointResponse;
 import com.ssu.goodplassu.member.openapi.MemberApi;
 import com.ssu.goodplassu.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,19 @@ public class MemberController implements MemberApi {
 						HttpStatus.OK.value(),
 						"이달의 선행왕 목록을 불러왔습니다.",
 						highestMonthPointResponseList
+				)
+		);
+	}
+
+	@GetMapping("/total")
+	public ResponseEntity<?> getHighestTotalPoint() {
+		List<HighestTotalPointResponse> highestTotalPointResponseList = memberService.getHighestTotalPointMembers();
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"전체 선행왕 목록을 불러왔습니다.",
+						highestTotalPointResponseList
 				)
 		);
 	}

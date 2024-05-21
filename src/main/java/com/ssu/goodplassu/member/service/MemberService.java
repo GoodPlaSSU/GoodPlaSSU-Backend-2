@@ -1,6 +1,7 @@
 package com.ssu.goodplassu.member.service;
 
 import com.ssu.goodplassu.member.dto.response.HighestMonthPointResponse;
+import com.ssu.goodplassu.member.dto.response.HighestTotalPointResponse;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,15 @@ public class MemberService {
 				.collect(Collectors.toList());
 
 		return highestMonthPointResponseList;
+	}
+
+	public List<HighestTotalPointResponse> getHighestTotalPointMembers() {
+		List<Member> memberList = memberRepository.findTop4ByOrderByTotalPointDesc();
+
+		List<HighestTotalPointResponse> highestTotalPointResponseList = memberList.stream()
+				.map(member -> HighestTotalPointResponse.of(member))
+				.collect(Collectors.toList());
+
+		return highestTotalPointResponseList;
 	}
 }

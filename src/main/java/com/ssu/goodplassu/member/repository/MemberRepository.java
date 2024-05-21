@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByEmail(String email);
 	List<Member> findTop4ByOrderByMonthPointDesc();
+	List<Member> findTop4ByOrderByTotalPointDesc();
 }
