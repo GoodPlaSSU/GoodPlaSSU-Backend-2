@@ -139,11 +139,21 @@ public class BoardService {
 		return PostModifyResponse.of(board);
 	}
 
-	private void deleteImages(final List<String> deletedImagesUrl) {
-		for (String imageUrl : deletedImagesUrl) {
-			String imageId = imageService.getImageIdAndDeleteImage(
-					imageUrl); // ImageRepository 이미지 삭제 및 S3 버켓 이미지 ID 반환
-			imageService.deleteImageInS3Bucket(imageId); // S3 버켓 이미지 삭제
+	@Transactional
+	public Board deletePost(final Long postId) {
+		Board board = boardRepository.findById(postId).orElse(null);
+		if (board == null) {
+			return null;
 		}
+
+		if (board.getImages() != null) {
+			board.getImages().stream()
+					.map(image -> imageService.getImageIdAndDeleteImage(image.getUrl()))
+					.forEach(imageId -> imageService.deleteImageInS3Bucket(imageId));
+		}
+
+		boardRepository.delete(board);
+
+		return board;
 	}
 }

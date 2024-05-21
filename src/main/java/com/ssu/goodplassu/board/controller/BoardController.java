@@ -6,6 +6,7 @@ import com.ssu.goodplassu.board.dto.response.BoardDetailResponse;
 import com.ssu.goodplassu.board.dto.response.BoardListResponse;
 import com.ssu.goodplassu.board.dto.response.PostCreateResponse;
 import com.ssu.goodplassu.board.dto.response.PostModifyResponse;
+import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
@@ -121,6 +122,29 @@ public class BoardController implements BoardApi {
 						HttpStatus.OK.value(),
 						"게시물을 수정했습니다.",
 						postModifyResponse
+				)
+		);
+	}
+
+	@DeleteMapping(path = "/{postId}")
+	public ResponseEntity<?> deletePost(@PathVariable("postId") final Long postId) {
+		Board result = boardService.deletePost(postId);
+		if (result == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"게시물 삭제에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.NO_CONTENT.value(),
+						"게시물 삭제에 성공했습니다.",
+						List.of()
 				)
 		);
 	}
