@@ -71,4 +71,16 @@ public interface BoardApi {
 			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostModifyRequest postModifyRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	);
+
+	@Operation(
+			summary = "게시물 삭제",
+			description = "게시물 삭제"
+	)
+	@ApiResponse(responseCode = "200", description = "게시물 삭제 성공")
+	@ApiResponse(responseCode = "400", description = "게시물 삭제 실패")
+	@ApiResponse(responseCode = "500", description = "서버 에러")
+	@DeleteMapping(path = "/{postId}")
+	public ResponseEntity<?> deletePost(
+			@PathVariable("postId") final Long postId
+	);
 }
