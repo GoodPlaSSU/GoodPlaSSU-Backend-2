@@ -14,6 +14,16 @@ public interface MemberApi {
 			description = "이달의 month_point가 가장 높은 4명"
 	)
 	@ApiResponse(responseCode = "200", description = "이달의 선행왕 4명 조회 성공")
+	@ApiResponse(responseCode = "500", description = "서버 에러")
 	@GetMapping("/month")
 	public ResponseEntity<?> getHighestMonthPoint();
+
+	@Operation(
+			summary = "전체 선행왕 리스트",
+			description = "total_point가 가장 높은 4명"
+	)
+	@ApiResponse(responseCode = "200", description = "전체 선행왕 4명 조회 성공")
+	@ApiResponse(responseCode = "500", description = "서버 에러")
+	@GetMapping("/total")
+	public ResponseEntity<?> getHighestTotalPoint();
 }
