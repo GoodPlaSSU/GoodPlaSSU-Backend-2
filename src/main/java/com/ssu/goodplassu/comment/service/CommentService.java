@@ -50,4 +50,16 @@ public class CommentService {
 
 		return CommentCreateResponse.of(commentResult);
 	}
+
+	@Transactional
+	public Comment deleteComment(final Long commentId) {
+		Comment comment = commentRepository.findById(commentId).orElse(null);
+		if (comment == null) {
+			return null;
+		}
+
+		commentRepository.delete(comment);
+
+		return comment;
+	}
 }

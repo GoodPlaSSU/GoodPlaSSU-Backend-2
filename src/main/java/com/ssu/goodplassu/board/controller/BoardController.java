@@ -143,7 +143,7 @@ public class BoardController implements BoardApi {
 		return ResponseEntity.ok(
 				new ResponseDto<>(
 						HttpStatus.NO_CONTENT.value(),
-						"게시물 삭제에 성공했습니다.",
+						"게시물을 삭제했습니다.",
 						List.of()
 				)
 		);
