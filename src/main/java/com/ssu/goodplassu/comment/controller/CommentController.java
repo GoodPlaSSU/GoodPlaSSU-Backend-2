@@ -3,6 +3,7 @@ package com.ssu.goodplassu.comment.controller;
 import com.ssu.goodplassu.comment.dto.request.CommentCreateRequest;
 import com.ssu.goodplassu.comment.dto.response.CommentCreateResponse;
 import com.ssu.goodplassu.comment.entity.Comment;
+import com.ssu.goodplassu.comment.openapi.CommentApi;
 import com.ssu.goodplassu.comment.service.CommentService;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comments")
-public class CommentController {
+public class CommentController implements CommentApi {
 	private final CommentService commentService;
 
 	@PostMapping("/")
