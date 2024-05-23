@@ -1,6 +1,6 @@
 package com.ssu.goodplassu.cheer.controller;
 
-import com.ssu.goodplassu.cheer.dto.request.CheerOnRequest;
+import com.ssu.goodplassu.cheer.dto.request.CheerUpdateRequest;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.openapi.CheerApi;
 import com.ssu.goodplassu.cheer.service.CheerService;
@@ -22,8 +22,8 @@ public class CheerController implements CheerApi {
 	private final CheerService cheerService;
 
 	@PostMapping("/like")
-	public ResponseEntity<?> setCheerOn(@RequestBody final CheerOnRequest cheerOnRequest) {
-		Cheer cheer = cheerService.setCheerOn(cheerOnRequest);
+	public ResponseEntity<?> setCheerOn(@RequestBody final CheerUpdateRequest cheerUpdateRequest) {
+		Cheer cheer = cheerService.setCheerOn(cheerUpdateRequest);
 		if (cheer == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -39,6 +39,29 @@ public class CheerController implements CheerApi {
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
 						"게시물 좋아요에 성공했습니다.",
+						List.of()
+				)
+		);
+	}
+
+	@PostMapping("/unlike")
+	public ResponseEntity<?> setCheerOff(@RequestBody final CheerUpdateRequest cheerUpdateRequest) {
+		Cheer cheer = cheerService.setCheerOff(cheerUpdateRequest);
+		if (cheer == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"게시물 좋아요 취소에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"게시물 좋아요 취소에 성공했습니다.",
 						List.of()
 				)
 		);
