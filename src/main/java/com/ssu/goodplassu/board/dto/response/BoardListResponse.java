@@ -19,7 +19,7 @@ public class BoardListResponse {
 	private final String content;
 	private final String thumbnail;
 	private final boolean like_on;
-	private final Long like_count;
+	private final int like_count;
 	private final LocalDateTime updated_at;
 	private final int comment_count;
 
@@ -27,6 +27,7 @@ public class BoardListResponse {
 			final Board board,
 			final Member member,
 			final Cheer cheer,
+			final int cheerCnt,
 			final int commentCnt
 	) {
 		String imageUrl = "";
@@ -41,7 +42,7 @@ public class BoardListResponse {
 				board.getContent(),
 				imageUrl,
 				cheer == null ? false : cheer.isOn(),	// 로그인하지 않은 경우 null -> 좋아요(cheer) 누르지 않은 상태
-				board.getCheerCount(),
+				cheerCnt,
 				board.getUpdatedAt(),
 				commentCnt
 		);

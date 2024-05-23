@@ -15,7 +15,6 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @RequiredArgsConstructor(access = PRIVATE)
 public class BoardDetailResponse {
-	// post id, writer portrait, writer name, updated at, writer id, post image 1~4, post cheer_count
 	private final Long id;
 	private final Long writer_id;
 	private final String writer_name;
@@ -23,10 +22,14 @@ public class BoardDetailResponse {
 	private final String content;
 	private final ImagesResponse images;
 	private final LocalDateTime updated_at;
-	private final Long like_count;
+	private final int like_count;
 	private final List<CommentListResponse> comments;
 
-	public static BoardDetailResponse of(final Board board, final Member member, final List<CommentListResponse> commentListResponseList) {
+	public static BoardDetailResponse of(
+			final Board board, final Member member,
+			final List<CommentListResponse> commentListResponseList,
+			final int cheerCnt
+	) {
 		return new BoardDetailResponse(
 			board.getId(),
 			member.getId(),
@@ -35,7 +38,7 @@ public class BoardDetailResponse {
 			board.getContent(),
 			ImagesResponse.of(board.getImages()),
 			board.getUpdatedAt(),
-			board.getCheerCount(),
+			cheerCnt,
 			commentListResponseList
 		);
 	}
