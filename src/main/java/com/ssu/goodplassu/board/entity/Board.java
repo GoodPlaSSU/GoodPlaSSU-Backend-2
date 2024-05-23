@@ -34,7 +34,6 @@ public class Board {
 	@OneToMany(mappedBy = "board", cascade = {REMOVE, PERSIST}, orphanRemoval = true)
 	private List<Image> images = new ArrayList<>();
 	private Long viewCount = 0L;
-	private Long cheerCount = 0L;
 	@CreatedDate
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;

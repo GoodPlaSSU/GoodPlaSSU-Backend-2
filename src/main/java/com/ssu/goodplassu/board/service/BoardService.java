@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,11 @@ public class BoardService {
 				.map(board -> {
 					// 로그인한 멤버(유저)가 게시물에 좋아요(cheer)를 눌렀는지 확인하기 위함. 로그인하지 않은 상태에서는 null
 					Cheer cheer = null;
-					if (userId != null)
+					List<Cheer> cheerOnList = new ArrayList<>();
+					if (userId != null) {
 						cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
+						cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
+					}
 
 					List<Comment> commentList = commentRepository.findAllByBoard(board);
 
@@ -58,6 +62,7 @@ public class BoardService {
 							board,
 							board.getMember(),
 							cheer,
+							cheerOnList.size(),
 							commentList.size()
 					);
 				}).collect(Collectors.toList());
@@ -79,8 +84,9 @@ public class BoardService {
 		member.increaseMonthPoint();
 
 		List<CommentListResponse> commentListResponseList = commentService.findCommentList(board);
+		List<Cheer> cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
 
-		return BoardDetailResponse.of(board, member, commentListResponseList);
+		return BoardDetailResponse.of(board, member, commentListResponseList, cheerOnList.size());
 	}
 
 	@Transactional

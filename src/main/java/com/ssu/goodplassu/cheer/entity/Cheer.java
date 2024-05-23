@@ -23,8 +23,22 @@ public class Cheer {
 	private boolean isOn;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private Member member;
+	private Member member;	// 좋아요를 누른 사람
 	@ManyToOne(fetch = FetchType.LAZY)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Board board;
+
+	public Cheer(
+			Member member,
+			Board board,
+			boolean isOn
+	) {
+		this.member = member;
+		this.board = board;
+		this.isOn = isOn;
+	}
+
+	public void updateIsOn(boolean isOn) {
+		this.isOn = isOn;
+	}
 }
