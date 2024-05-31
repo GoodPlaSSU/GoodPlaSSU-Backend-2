@@ -15,6 +15,7 @@ public class Member {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 	private String name;
+	@Column(unique = true)
 	private String email;
 	private String portrait;
 	@Builder.Default
