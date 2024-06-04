@@ -1,6 +1,7 @@
 package com.ssu.goodplassu.common.config;
 
 import com.ssu.goodplassu.common.config.auth.service.CustomOAuth2UserService;
+import com.ssu.goodplassu.member.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -23,11 +23,15 @@ public class SecurityConfig {
 		http
 				.cors(c -> c.configure(http))
 				.csrf(c -> c.disable())
+				.headers(
+						(headerConfig) -> headerConfig.frameOptions(
+								frameOptionsConfig -> frameOptionsConfig.disable()
+						)
+				)
 				.authorizeHttpRequests(a -> a
-						.requestMatchers(
-								new MvcRequestMatcher(introspector, "/h2-console/**"),
-								new AntPathRequestMatcher("/**")
-						).permitAll()
+						.requestMatchers("/api/cheers/**").hasRole(Role.USER.name())
+						.requestMatchers(new MvcRequestMatcher(introspector, "/h2-console/**")).permitAll()
+						.requestMatchers("/", "/api/boards/**", "/api/comments/**", "/api/members/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.logout(

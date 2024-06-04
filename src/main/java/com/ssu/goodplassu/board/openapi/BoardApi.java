@@ -26,7 +26,7 @@ public interface BoardApi {
 			responseCode = "200",
 			description = "게시물 리스트 조회 성공"
 	)
-	@GetMapping("")
+	@GetMapping("/")
 	public ResponseEntity<?> getBoards(
 			@RequestParam(name = "tag") final int tagAsInt,
 			@RequestParam(value = "page", defaultValue = "0") int page,

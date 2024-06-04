@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login with Google</title>
+</head>
+<body>
+<h2>Login Page</h2>
+<div>
+    <!-- 로그인 URL을 OAuth2에 맞게 자동 생성 -->
+    <a th:href="@{/oauth2/authorization/google}">Login with Google</a>
+</div>
+</body>
+</html>
