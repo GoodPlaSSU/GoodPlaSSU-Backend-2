@@ -9,6 +9,8 @@ import com.ssu.goodplassu.board.dto.response.PostModifyResponse;
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.openapi.BoardApi;
 import com.ssu.goodplassu.board.service.BoardService;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.common.config.auth.util.SecurityUtils;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,12 +34,13 @@ public class BoardController implements BoardApi {
 	@GetMapping("/")
 	public ResponseEntity<?> getBoards(
 			@RequestParam(name = "tag") final int tagAsInt,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(name = "user_key", required = false) final Long userId
+			@RequestParam(value = "page", defaultValue = "0") int page
 	) {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
 		// 0: 선행게시판, 1: 참여게시판
 		boolean tag = tagAsInt == 1 ? true : false;
-		Page<BoardListResponse> boardListResponse = boardService.findBoardList(tag, userId, page);
+		Page<BoardListResponse> boardListResponse = boardService.findBoardList(tag, page, userDto);
 
 		return ResponseEntity.ok(
 				new ResponseDto<>(
@@ -50,7 +53,9 @@ public class BoardController implements BoardApi {
 
 	@GetMapping("/{postId}")
 	public ResponseEntity<?> getBoardById(@PathVariable(value = "postId") final Long postId) {
-		BoardDetailResponse boardDetailResponse = boardService.findBoardById(postId);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		BoardDetailResponse boardDetailResponse = boardService.findBoardById(postId, userDto);
 		if (boardDetailResponse == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -77,7 +82,9 @@ public class BoardController implements BoardApi {
 			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostCreateRequest postCreateRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	) {
-		PostCreateResponse postCreateResponse = boardService.createPost(postCreateRequest, multipartFiles);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		PostCreateResponse postCreateResponse = boardService.createPost(postCreateRequest, multipartFiles, userDto);
 		if (postCreateResponse == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -105,7 +112,9 @@ public class BoardController implements BoardApi {
 			@RequestPart @Parameter(schema = @Schema(type = "string", format = "binary")) @Valid final PostModifyRequest postModifyRequest,
 			@RequestPart(value = "images", required = false) final List<MultipartFile> multipartFiles
 	) {
-		PostModifyResponse postModifyResponse = boardService.modifyPost(postId, postModifyRequest, multipartFiles);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		PostModifyResponse postModifyResponse = boardService.modifyPost(postId, postModifyRequest, multipartFiles, userDto);
 		if (postModifyResponse == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -128,7 +137,9 @@ public class BoardController implements BoardApi {
 
 	@DeleteMapping(path = "/{postId}")
 	public ResponseEntity<?> deletePost(@PathVariable("postId") final Long postId) {
-		Board result = boardService.deletePost(postId);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Board result = boardService.deletePost(postId, userDto);
 		if (result == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(

@@ -24,11 +24,13 @@ public class BoardDetailResponse {
 	private final LocalDateTime updated_at;
 	private final int like_count;
 	private final List<CommentListResponse> comments;
+	private final boolean like_on;
 
 	public static BoardDetailResponse of(
 			final Board board, final Member member,
 			final List<CommentListResponse> commentListResponseList,
-			final int cheerCnt
+			final int cheerCnt,
+			final boolean isOn
 	) {
 		return new BoardDetailResponse(
 			board.getId(),
@@ -39,7 +41,8 @@ public class BoardDetailResponse {
 			ImagesResponse.of(board.getImages()),
 			board.getUpdatedAt(),
 			cheerCnt,
-			commentListResponseList
+			commentListResponseList,
+			isOn
 		);
 	}
 }

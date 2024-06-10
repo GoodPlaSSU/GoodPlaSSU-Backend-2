@@ -1,12 +1,11 @@
 package com.ssu.goodplassu.cheer.openapi;
 
-import com.ssu.goodplassu.cheer.dto.request.CheerUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Cheer", description = "게시글에 좋아요 추가 및 삭제 관련 API")
 public interface CheerApi {
@@ -18,8 +17,8 @@ public interface CheerApi {
 	@ApiResponse(responseCode = "200", description = "게시글 좋아요 성공")
 	@ApiResponse(responseCode = "400", description = "게시글 좋아요 실패")
 	@ApiResponse(responseCode = "500", description = "서버 에러")
-	@PostMapping("/like")
-	public ResponseEntity<?> setCheerOn(@RequestBody final CheerUpdateRequest cheerUpdateRequest);
+	@PostMapping("/like/{postId}")
+	public ResponseEntity<?> setCheerOn(@PathVariable("postId") final Long postId);
 
 	@Operation(
 			summary = "게시글에 좋아요 취소",
@@ -28,6 +27,6 @@ public interface CheerApi {
 	@ApiResponse(responseCode = "200", description = "게시글 좋아요 취소 성공")
 	@ApiResponse(responseCode = "400", description = "게시글 좋아요 취소 실패")
 	@ApiResponse(responseCode = "500", description = "서버 에러")
-	@PostMapping("/unlike")
-	public ResponseEntity<?> setCheerOff(@RequestBody final CheerUpdateRequest cheerUpdateRequest);
+	@PostMapping("/unlike/{postId}")
+	public ResponseEntity<?> setCheerOff(@PathVariable("postId") final Long postId);
 }
