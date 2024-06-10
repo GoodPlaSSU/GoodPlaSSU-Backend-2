@@ -29,7 +29,7 @@ import java.util.List;
 public class BoardController implements BoardApi {
 	private final BoardService boardService;
 
-	@GetMapping("")
+	@GetMapping("/")
 	public ResponseEntity<?> getBoards(
 			@RequestParam(name = "tag") final int tagAsInt,
 			@RequestParam(value = "page", defaultValue = "0") int page,

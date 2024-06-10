@@ -15,6 +15,7 @@ public class OpenApiConfig {
 				.info(new Info()
 						.title("GoodPlaSSU API")
 						.version("1.0")
-						.description("GoodPlaSSU API with SpringDoc OpenAPI 3"));
+						.description("GoodPlaSSU API with SpringDoc OpenAPI 3"))
+				;
 	}
 }
