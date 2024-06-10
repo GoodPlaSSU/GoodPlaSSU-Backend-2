@@ -41,43 +41,26 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 		// 서비스 제공 플랫폼(Google)이 어디인지 가져옴
 		String provider = oAuth2User.getAttribute("provider");
 
-		// CustomOAuth2UserService에서 세팅한 로그인한 회원 존재 여부를 가져옴
-		boolean isExist = oAuth2User.getAttribute("exist");
-
 		// OAuth2User로부터 Role을 얻음
 		String role = oAuth2User.getAuthorities().stream()
 				.findFirst()	// 첫 번째 Role을 찾아옴(Role을 하나만 가지도록 설계함)
 				.orElseThrow(() -> new IllegalAccessError())	// 존재하지 않을 시 예외
 				.getAuthority();	// Role을 가져옴
 
-		// 회원이 존재할 경우
-		if (isExist) {
-			// 회원이 존재하면 JWT 발행
-			GeneratedToken token = jwtUtil.generateToken(email, role);
-			log.info("JWT = {}", token.getAccessToken());
+		// JWT 발행
+		GeneratedToken token = jwtUtil.generateToken(email, role);
+		log.info("JWT = {}", token.getAccessToken());
 
-			// Access Token을 쿼리스트링으로 전달하는 URL 생성
-			String targetUrl = UriComponentsBuilder.fromUriString(redirectUrl)
-					.queryParam("accessToken", token.getAccessToken())
-					.build()
-					.encode(StandardCharsets.UTF_8)
-					.toUriString();
+		// Access Token을 쿼리스트링으로 전달하는 URL 생성
+		String targetUrl = UriComponentsBuilder.fromUriString(redirectUrl)
+				.queryParam("accessToken", token.getAccessToken())
+				.build()
+				.encode(StandardCharsets.UTF_8)
+				.toUriString();
 
-			log.info("Redirect 준비");
+		log.info("Redirect 준비");
 
-			// 로그인 확인 페이지로 redirect 시킴
-			getRedirectStrategy().sendRedirect(request, response, targetUrl);
-		} else {
-			// 회원이 존재하지 않을 경우, 서비스 제공자와 email을 쿼리스트링으로 전달하는 URL 생성
-			String targetUrl = UriComponentsBuilder.fromUriString(redirectUrl)
-					.queryParam("email", (String) oAuth2User.getAttribute("email"))
-					.queryParam("provider", provider)
-					.build()
-					.encode(StandardCharsets.UTF_8)
-					.toUriString();
-
-			// 회원가입 페이지로 redirect
-			getRedirectStrategy().sendRedirect(request, response, targetUrl);
-		}
+		// 로그인 확인 페이지로 redirect 시킴
+		getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}
 }

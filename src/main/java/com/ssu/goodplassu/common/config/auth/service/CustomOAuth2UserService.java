@@ -4,7 +4,6 @@ import com.ssu.goodplassu.common.config.auth.dto.OAuth2Attribute;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,7 +17,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -62,8 +60,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		Optional<Member> findMember = memberRepository.findByEmail(email);
 
 		if (findMember.isEmpty()) {
-			// 회원이 존재하지 않을 경우, memberAttribute의 exist 값을 false로 넣음
-			memberAttribute.put("exist", false);
 			// 회원의 권한(기본 권한인 ROLE_USER 설정), 회원 속성, 속성 이름을 이용해 DefaultOAuth2User 객체를 생성해 반환함
 			return new DefaultOAuth2User(
 					Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
@@ -72,9 +68,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 			);
 		}
 
-		// 회원이 존재할 경우, memberAttribute의 exist 값을 true로 넣음
-		// SuccessHandler에서 exist 변수의 값에 따라 회원가입을 했는지 안 했는지 여부를 확인하고 처리함
-		memberAttribute.put("exist", true);
 		// 회원의 권한, 회원 속성, 속성 이름을 이용해 DefaultOAuth2User 객체를 생성해 반환함
 		return new DefaultOAuth2User(
 				Collections.singleton(new SimpleGrantedAuthority(findMember.get().getRoleKey())),

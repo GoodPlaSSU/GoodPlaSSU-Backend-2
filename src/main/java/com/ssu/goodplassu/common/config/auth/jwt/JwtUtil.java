@@ -8,13 +8,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.Date;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JwtUtil {
@@ -40,10 +38,11 @@ public class JwtUtil {
 
 	public String generateRefreshToken(String email, String role) {
 		// 토큰의 유효 기간을 밀리 초 단위로 설정
-		long refreshPeriod = 1000L * 60L * 24L * 7;	// 1주
+		long refreshPeriod = 1000L * 60L * 60L * 24L * 7;	// 1주
 
 		// 새로운 클레임 객체를 생성하고 email과 role 설정
-		Claims claims = Jwts.claims().setSubject(email);
+		Claims claims = Jwts.claims();
+		claims.put("email", email);
 		claims.put("role", role);
 
 		// 현재 시간과 날짜 불러옴
@@ -53,14 +52,15 @@ public class JwtUtil {
 				.setClaims(claims)	// Payload를 구성하는 속성 정의
 				.setIssuedAt(now)	// 발행 일자
 				.setExpiration(new Date(now.getTime() + refreshPeriod))	// 만료 일자
-				.signWith(SignatureAlgorithm.HS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
+				.signWith(SignatureAlgorithm.RS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
 				.compact();
 	}
 
 	public String generateAccessToken(String email, String role) {
-		long accessPeriod = 1000L * 60L * 30L;	// 30분
+		long accessPeriod = 1000L * 60L * 60L;	// 1시간
 
-		Claims claims = Jwts.claims().setSubject(email);
+		Claims claims = Jwts.claims();
+		claims.put("email", email);
 		claims.put("role", role);
 
 		Date now = new Date();
@@ -69,7 +69,7 @@ public class JwtUtil {
 				.setClaims(claims)	// Payload를 구성하는 속성 정의
 				.setIssuedAt(now)	// 발행 일자
 				.setExpiration(new Date(now.getTime() + accessPeriod))	// 만료 일자
-				.signWith(SignatureAlgorithm.HS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
+				.signWith(SignatureAlgorithm.RS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
 				.compact();
 	}
 

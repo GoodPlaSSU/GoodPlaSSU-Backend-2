@@ -21,6 +21,21 @@ public class AuthController {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final RefreshTokenService refreshTokenService;
 	private final JwtUtil jwtUtil;
+	/*
+	private final AuthService authService;
+
+	@GetMapping("/login/oauth2/code/google")
+	public ResponseEntity<?> googleCallback(@RequestParam(name = "code") final String code) {
+		String googleAccessToken = authService.getGoogleAccessToken(code);
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						googleAccessToken,
+						List.of()
+				)
+		);
+	}
+	*/
 
 	@PostMapping("/token/logout")
 	public ResponseEntity<?> logout(
