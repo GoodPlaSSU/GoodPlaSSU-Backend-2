@@ -7,6 +7,7 @@ import com.ssu.goodplassu.comment.dto.response.CommentCreateResponse;
 import com.ssu.goodplassu.comment.dto.response.CommentListResponse;
 import com.ssu.goodplassu.comment.entity.Comment;
 import com.ssu.goodplassu.comment.repository.CommentRepository;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,13 @@ public class CommentService {
 	}
 
 	@Transactional
-	public CommentCreateResponse createComment(final CommentCreateRequest commentCreateRequest) {
+	public CommentCreateResponse createComment(
+			final CommentCreateRequest commentCreateRequest,
+			final SecurityUserDto userDto
+	) {
 		Board board = boardRepository.findById(commentCreateRequest.getBoard_id()).orElse(null);
 
-		Member member = memberRepository.findById(commentCreateRequest.getWriter_id()).orElse(null);
+		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
 
 		if (board == null || member == null) {
 			return null;
@@ -52,9 +56,13 @@ public class CommentService {
 	}
 
 	@Transactional
-	public Comment deleteComment(final Long commentId) {
+	public Comment deleteComment(final Long commentId, final SecurityUserDto userDto) {
 		Comment comment = commentRepository.findById(commentId).orElse(null);
 		if (comment == null) {
+			return null;
+		}
+
+		if (comment.getMember().getEmail() != userDto.getEmail()) {
 			return null;
 		}
 

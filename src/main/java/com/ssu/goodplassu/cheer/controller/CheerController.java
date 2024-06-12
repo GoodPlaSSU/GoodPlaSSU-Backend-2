@@ -1,15 +1,16 @@
 package com.ssu.goodplassu.cheer.controller;
 
-import com.ssu.goodplassu.cheer.dto.request.CheerUpdateRequest;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.openapi.CheerApi;
 import com.ssu.goodplassu.cheer.service.CheerService;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.common.config.auth.util.SecurityUtils;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,9 +22,11 @@ import java.util.List;
 public class CheerController implements CheerApi {
 	private final CheerService cheerService;
 
-	@PostMapping("/like")
-	public ResponseEntity<?> setCheerOn(@RequestBody final CheerUpdateRequest cheerUpdateRequest) {
-		Cheer cheer = cheerService.setCheerOn(cheerUpdateRequest);
+	@PostMapping("/like/{postId}")
+	public ResponseEntity<?> setCheerOn(@PathVariable("postId") final Long postId) {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Cheer cheer = cheerService.setCheerOn(postId, userDto);
 		if (cheer == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -44,9 +47,11 @@ public class CheerController implements CheerApi {
 		);
 	}
 
-	@PostMapping("/unlike")
-	public ResponseEntity<?> setCheerOff(@RequestBody final CheerUpdateRequest cheerUpdateRequest) {
-		Cheer cheer = cheerService.setCheerOff(cheerUpdateRequest);
+	@PostMapping("/unlike/{postId}")
+	public ResponseEntity<?> setCheerOff(@PathVariable("postId") final Long postId) {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Cheer cheer = cheerService.setCheerOff(postId, userDto);
 		if (cheer == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(

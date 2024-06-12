@@ -5,6 +5,8 @@ import com.ssu.goodplassu.comment.dto.response.CommentCreateResponse;
 import com.ssu.goodplassu.comment.entity.Comment;
 import com.ssu.goodplassu.comment.openapi.CommentApi;
 import com.ssu.goodplassu.comment.service.CommentService;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.common.config.auth.util.SecurityUtils;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,9 @@ public class CommentController implements CommentApi {
 
 	@PostMapping("/")
 	public ResponseEntity<?> createComment(@RequestBody final CommentCreateRequest commentCreateRequest) {
-		CommentCreateResponse commentCreateResponse = commentService.createComment(commentCreateRequest);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		CommentCreateResponse commentCreateResponse = commentService.createComment(commentCreateRequest, userDto);
 		if (commentCreateResponse == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
@@ -44,7 +48,9 @@ public class CommentController implements CommentApi {
 
 	@DeleteMapping("/{commentId}")
 	public ResponseEntity<?> deleteComment(@PathVariable("commentId") final Long commentId) {
-		Comment comment = commentService.deleteComment(commentId);
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Comment comment = commentService.deleteComment(commentId, userDto);
 		if (comment == null) {
 			return new ResponseEntity<>(
 					new ResponseDto<>(

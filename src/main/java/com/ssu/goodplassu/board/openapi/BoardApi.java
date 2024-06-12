@@ -29,8 +29,7 @@ public interface BoardApi {
 	@GetMapping("/")
 	public ResponseEntity<?> getBoards(
 			@RequestParam(name = "tag") final int tagAsInt,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(name = "user_key", required = false) final Long userId
+			@RequestParam(value = "page", defaultValue = "0") int page
 	);
 
 	@Operation(

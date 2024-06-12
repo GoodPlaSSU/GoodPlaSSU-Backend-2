@@ -2,9 +2,9 @@ package com.ssu.goodplassu.cheer.service;
 
 import com.ssu.goodplassu.board.entity.Board;
 import com.ssu.goodplassu.board.repository.BoardRepository;
-import com.ssu.goodplassu.cheer.dto.request.CheerUpdateRequest;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.repository.CheerRepository;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class CheerService {
 	private final BoardRepository boardRepository;
 	private final MemberRepository memberRepository;
 
-	private Pair<Member, Board> isErrorSetCheer(final CheerUpdateRequest cheerUpdateRequest) {
-		if (cheerUpdateRequest.getUser_id() == null) {
+	private Pair<Member, Board> isErrorSetCheer(final Long postId, final SecurityUserDto userDto) {
+		if (userDto.getEmail() == null) {
 			return null;	// 로그인하지 않은 상태
 		}
 
-		Board board = boardRepository.findById(cheerUpdateRequest.getPost_id()).orElse(null);
-		Member member = memberRepository.findById(cheerUpdateRequest.getUser_id()).orElse(null);
+		Board board = boardRepository.findById(postId).orElse(null);
+		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
 		if (board == null || member == null) {
 			return null;	// 해당 게시물이 없는 상태 or 해당 멤버가 없는 상태
 		}
@@ -35,13 +35,13 @@ public class CheerService {
 	}
 
 	@Transactional
-	public Cheer setCheerOn(final CheerUpdateRequest cheerUpdateRequest) {
-		Pair<Member, Board> errCheck = isErrorSetCheer(cheerUpdateRequest);
+	public Cheer setCheerOn(final Long postId, final SecurityUserDto userDto) {
+		Pair<Member, Board> errCheck = isErrorSetCheer(postId, userDto);
 		if (errCheck == null) {
 			return null;
 		}
 
-		Cheer cheer = cheerRepository.findByMemberIdAndBoardId(cheerUpdateRequest.getUser_id(), cheerUpdateRequest.getPost_id()).orElse(null);
+		Cheer cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), postId).orElse(null);
 		if (cheer == null) {
 			// 로그인 한 유저가 해당 게시물에 아직 좋아요를 누른 적이 없는 상태(최초로 좋아요를 누르는 경우)
 			Member writer = memberRepository.findById(errCheck.getRight().getMember().getId()).orElse(null);
@@ -57,13 +57,13 @@ public class CheerService {
 	}
 
 	@Transactional
-	public Cheer setCheerOff(final CheerUpdateRequest cheerUpdateRequest) {
-		Pair<Member, Board> errCheck = isErrorSetCheer(cheerUpdateRequest);
+	public Cheer setCheerOff(final Long postId, final SecurityUserDto userDto) {
+		Pair<Member, Board> errCheck = isErrorSetCheer(postId, userDto);
 		if (errCheck == null) {
 			return null;
 		}
 
-		Cheer cheer = cheerRepository.findByMemberIdAndBoardId(cheerUpdateRequest.getUser_id(), cheerUpdateRequest.getPost_id()).orElse(null);
+		Cheer cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), postId).orElse(null);
 		if (cheer == null) {
 			return null;
 		}
