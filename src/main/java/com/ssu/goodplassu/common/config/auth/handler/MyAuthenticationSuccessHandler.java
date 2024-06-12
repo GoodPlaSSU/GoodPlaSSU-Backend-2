@@ -2,6 +2,9 @@ package com.ssu.goodplassu.common.config.auth.handler;
 
 import com.ssu.goodplassu.common.config.auth.dto.GeneratedToken;
 import com.ssu.goodplassu.common.config.auth.jwt.JwtUtil;
+import com.ssu.goodplassu.member.entity.Member;
+import com.ssu.goodplassu.member.entity.Role;
+import com.ssu.goodplassu.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	private final JwtUtil jwtUtil;
+	private final MemberRepository memberRepository;
 
 	@Value("${client.url}")
 	private String redirectUrl;
@@ -59,6 +63,14 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 				.toUriString();
 
 		log.info("Redirect 준비");
+
+		memberRepository.save(Member.builder()
+				.name(oAuth2User.getAttribute("name"))
+				.email(email)
+				.portrait(oAuth2User.getAttribute("picture"))
+				.role(Role.USER)
+				.build()
+		);
 
 		// 로그인 확인 페이지로 redirect 시킴
 		getRedirectStrategy().sendRedirect(request, response, targetUrl);

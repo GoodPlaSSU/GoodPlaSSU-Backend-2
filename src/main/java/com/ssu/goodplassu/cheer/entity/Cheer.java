@@ -38,7 +38,7 @@ public class Cheer {
 		this.isOn = isOn;
 	}
 
-	public void updateIsOn(boolean isOn) {
-		this.isOn = isOn;
+	public void updateIsOn() {
+		this.isOn = this.isOn == true ? false : true;
 	}
 }
