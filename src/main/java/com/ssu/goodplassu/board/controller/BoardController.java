@@ -39,7 +39,22 @@ public class BoardController implements BoardApi {
 		SecurityUserDto userDto = SecurityUtils.getUser();
 
 		// 0: 선행게시판, 1: 참여게시판
-		boolean tag = tagAsInt == 1 ? true : false;
+		boolean tag = false;
+		if (tagAsInt == 1) {
+			tag = true;
+		} else if (tagAsInt == 0) {
+			tag = false;
+		} else {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"게시물 리스트 조회에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
 		Page<BoardListResponse> boardListResponse = boardService.findBoardList(tag, page, userDto);
 
 		return ResponseEntity.ok(

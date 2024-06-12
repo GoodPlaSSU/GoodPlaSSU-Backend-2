@@ -51,15 +51,14 @@ public class BoardService {
 		Pageable pageable = Pageable.ofSize(10).withPage(page);
 		Page<Board> boardList = boardRepository.findBoardsByTagOrderByCreatedAtDesc(tag, pageable);
 
-		Long userId = userDto.getId();
-
 		List<BoardListResponse> filteredBoardList = boardList.stream()
 				.map(board -> {
 					// 로그인한 멤버(유저)가 게시물에 좋아요(cheer)를 눌렀는지 확인하기 위함. 로그인하지 않은 상태에서는 null
 					Cheer cheer = null;
 					List<Cheer> cheerOnList = new ArrayList<>();
-					if (userId != null) {
-						cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
+
+					if (userDto != null) {
+						cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), board.getId()).orElse(null);
 						cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
 					}
 
@@ -94,7 +93,10 @@ public class BoardService {
 		List<Cheer> cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
 
 		boolean isOn = true;
-		Cheer cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), board.getId()).orElse(null);
+		Cheer cheer = null;
+		if (userDto != null) {
+			cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), board.getId()).orElse(null);
+		}
 		if (cheer == null || cheer.isOn() == false) {
 			isOn = false;
 		}
@@ -107,7 +109,11 @@ public class BoardService {
 			final PostCreateRequest postCreateRequest,
 			final List<MultipartFile> multipartFiles,
 			final SecurityUserDto userDto
-			) {
+	) {
+		if (userDto == null) {
+			return null;
+		}
+
 		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
 		if (member == null) {
 			return null;
@@ -139,6 +145,10 @@ public class BoardService {
 			final List<MultipartFile> multipartFiles,
 			final SecurityUserDto userDto
 	) {
+		if (userDto == null) {
+			return null;
+		}
+
 		Board board = boardRepository.findById(postId).orElse(null);
 		if (board == null) {
 			return null;
@@ -166,6 +176,10 @@ public class BoardService {
 
 	@Transactional
 	public Board deletePost(final Long postId, final SecurityUserDto userDto) {
+		if (userDto == null) {
+			return null;
+		}
+
 		Board board = boardRepository.findById(postId).orElse(null);
 		if (board == null) {
 			return null;
