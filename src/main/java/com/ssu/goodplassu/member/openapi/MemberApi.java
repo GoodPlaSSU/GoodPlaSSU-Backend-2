@@ -107,4 +107,52 @@ public interface MemberApi {
 	})
 	@GetMapping("/total")
 	public ResponseEntity<?> getHighestTotalPoint();
+
+	@Operation(
+			summary = "사용자 정보 조회",
+			description = "사용자 정보 조회"
+	)
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "사용자 정보 조회 성공",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(implementation = ResponseDto.class),
+							examples = @ExampleObject(value =
+									"{" +
+											"\"result\": true," +
+											"\"status\": 200," +
+											"\"success\": \"사용자 정보 조회에 성공했습니다.\"," +
+											"\"data\": {" +
+													"\"name\": \"John Doe\"," +
+													"\"email\": \"john.doe@example.com\"," +
+													"\"profile\": \"portrait_url_here\"," +
+													"\"total_point\": 100," +
+													"\"month_point\": 50" +
+											"}" +
+									"}"
+							)
+					)
+			),
+			@ApiResponse(
+					responseCode = "400",
+					description = "사용자 정보 조회 실패",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(implementation = ResponseDto.class),
+							examples = @ExampleObject(value =
+									"{" +
+											"\"result\": false," +
+											"\"status\": 400," +
+											"\"success\": \"사용자 정보 조회에 실패했습니다.\"," +
+											"\"data\": []" +
+									"}"
+							)
+					)
+			),
+			@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	@GetMapping("/mypage/info")
+	public ResponseEntity<?> getMemberInfo();
 }

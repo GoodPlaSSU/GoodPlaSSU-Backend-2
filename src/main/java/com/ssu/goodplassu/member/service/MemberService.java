@@ -1,7 +1,9 @@
 package com.ssu.goodplassu.member.service;
 
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
 import com.ssu.goodplassu.member.dto.response.HighestMonthPointResponse;
 import com.ssu.goodplassu.member.dto.response.HighestTotalPointResponse;
+import com.ssu.goodplassu.member.dto.response.MemberInfoResponse;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +37,14 @@ public class MemberService {
 				.collect(Collectors.toList());
 
 		return highestTotalPointResponseList;
+	}
+
+	public MemberInfoResponse getMemberInfo(SecurityUserDto userDto) {
+		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
+		if (member == null) {
+			return null;
+		}
+
+		return MemberInfoResponse.of(member);
 	}
 }

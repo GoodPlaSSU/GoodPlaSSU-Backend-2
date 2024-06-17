@@ -1,8 +1,11 @@
 package com.ssu.goodplassu.member.controller;
 
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.common.config.auth.util.SecurityUtils;
 import com.ssu.goodplassu.common.dto.ResponseDto;
 import com.ssu.goodplassu.member.dto.response.HighestMonthPointResponse;
 import com.ssu.goodplassu.member.dto.response.HighestTotalPointResponse;
+import com.ssu.goodplassu.member.dto.response.MemberInfoResponse;
 import com.ssu.goodplassu.member.openapi.MemberApi;
 import com.ssu.goodplassu.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,31 @@ public class MemberController implements MemberApi {
 						HttpStatus.OK.value(),
 						"전체 선행왕 목록을 불러왔습니다.",
 						highestTotalPointResponseList
+				)
+		);
+	}
+
+	@GetMapping("/mypage/info")
+	public ResponseEntity<?> getMemberInfo() {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(userDto);
+		if (memberInfoResponse == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"사용자 정보 조회에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"사용자 정보 조회에 성공했습니다.",
+						memberInfoResponse
 				)
 		);
 	}
