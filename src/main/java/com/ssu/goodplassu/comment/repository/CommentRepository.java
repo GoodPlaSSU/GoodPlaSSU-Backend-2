@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 	List<Comment> findAllByBoard(Board board);
+	long countByBoard(Board board);
 }
