@@ -52,7 +52,7 @@ public class MemberController implements MemberApi {
 		);
 	}
 
-	@GetMapping("/mypage/info")
+	@GetMapping("/info")
 	public ResponseEntity<?> getMemberInfo() {
 		SecurityUserDto userDto = SecurityUtils.getUser();
 
@@ -77,7 +77,7 @@ public class MemberController implements MemberApi {
 		);
 	}
 
-	@GetMapping("/mypage/posts")
+	@GetMapping("/posts")
 	public ResponseEntity<?> getMemberPosts(@RequestParam(value = "page", defaultValue = "0") int page) {
 		SecurityUserDto userDto = SecurityUtils.getUser();
 
@@ -86,7 +86,7 @@ public class MemberController implements MemberApi {
 			return new ResponseEntity<>(
 					new ResponseDto<>(
 							HttpStatus.BAD_REQUEST.value(),
-							"사용자가 작성한 게시물 리스트를 조회에 실패했습니다.",
+							"사용자가 작성한 게시물 리스트 조회에 실패했습니다.",
 							List.of()
 					),
 					HttpStatus.BAD_REQUEST
@@ -97,6 +97,31 @@ public class MemberController implements MemberApi {
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
 						"사용자가 작성한 게시물 리스트를 불러왔습니다.",
+						memberPostListResponseList
+				)
+		);
+	}
+
+	@GetMapping("/comments/posts")
+	public ResponseEntity<?> getMemberCommentPosts(@RequestParam(value = "page", defaultValue = "0") int page) {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Page<MemberPostListResponse> memberPostListResponseList = memberService.getMemberCommentPosts(page, userDto);
+		if (memberPostListResponseList == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"사용자가 댓글을 작성한 게시물 리스트 조회에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"사용자가 댓글을 작성한 게시물 리스트를 불러왔습니다.",
 						memberPostListResponseList
 				)
 		);

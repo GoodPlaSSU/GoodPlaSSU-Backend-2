@@ -60,6 +60,22 @@ public class MemberService {
 		return MemberInfoResponse.of(member);
 	}
 
+	private List<MemberPostListResponse> getMemberPostListResponseList(Member member, Page<Board> boardList) {
+		return boardList.stream()
+				.map(board -> {
+					Cheer cheer = cheerRepository.findByMemberIdAndBoardId(member.getId(), board.getId()).orElse(null);
+					long cheerCnt = cheerRepository.countByBoardIdAndIsOnTrue(board.getId());
+					long commentCnt = commentRepository.countByBoard(board);
+
+					return MemberPostListResponse.of(
+							board,
+							cheer,
+							cheerCnt,
+							commentCnt
+					);
+				}).collect(Collectors.toList());
+	}
+
 	public Page<MemberPostListResponse> getMemberPosts(final int page, final SecurityUserDto userDto) {
 		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
 		if (member == null) {
@@ -70,21 +86,23 @@ public class MemberService {
 
 		Page<Board> boardList = boardRepository.findBoardsByMemberOrderByCreatedAtDesc(member, pageable);
 
-		List<MemberPostListResponse> filteredBoardList = boardList.stream()
-				.map(board -> {
-					Cheer cheer = cheerRepository.findByMemberIdAndBoardId(member.getId(), board.getId()).orElse(null);
-					long cheerCnt = cheerRepository.countByBoardIdAndIsOnTrue(board.getId());
+		List<MemberPostListResponse> memberPostListResponseList = getMemberPostListResponseList(member, boardList);
 
-					long commentCnt = commentRepository.countByBoard(board);
+		return new PageImpl<>(memberPostListResponseList, pageable, boardList.getTotalElements());
+	}
 
-					return MemberPostListResponse.of(
-							board,
-							cheer,
-							cheerCnt,
-							commentCnt
-					);
-				}).collect(Collectors.toList());
+	public Page<MemberPostListResponse> getMemberCommentPosts(final int page, final SecurityUserDto userDto) {
+		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
+		if (member == null) {
+			return null;
+		}
 
-		return new PageImpl<>(filteredBoardList, pageable, boardList.getTotalElements());
+		Pageable pageable = Pageable.ofSize(10).withPage(page);
+
+		Page<Board> boardList = commentRepository.findDistinctBoardsByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
+
+		List<MemberPostListResponse> memberPostListResponseList = getMemberPostListResponseList(member, boardList);
+
+		return new PageImpl<>(memberPostListResponseList, pageable, boardList.getTotalElements());
 	}
 }
