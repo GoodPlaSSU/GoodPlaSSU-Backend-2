@@ -10,7 +10,6 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor
 @NoArgsConstructor(access = PRIVATE)
 public class PostCreateRequest {
-	private Long writer_id;
 	private String content;
 	private boolean tag;
 }

@@ -14,6 +14,7 @@ import com.ssu.goodplassu.comment.dto.response.CommentListResponse;
 import com.ssu.goodplassu.comment.entity.Comment;
 import com.ssu.goodplassu.comment.repository.CommentRepository;
 import com.ssu.goodplassu.comment.service.CommentService;
+import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
 import com.ssu.goodplassu.image.entity.Image;
 import com.ssu.goodplassu.image.entity.ImageType;
 import com.ssu.goodplassu.image.service.ImageService;
@@ -42,7 +43,11 @@ public class BoardService {
 	private final ImageService imageService;
 	private final CommentService commentService;
 
-	public Page<BoardListResponse> findBoardList(final boolean tag, final Long userId, final int page) {
+	public Page<BoardListResponse> findBoardList(
+			final boolean tag,
+			final int page,
+			final SecurityUserDto userDto
+	) {
 		Pageable pageable = Pageable.ofSize(10).withPage(page);
 		Page<Board> boardList = boardRepository.findBoardsByTagOrderByCreatedAtDesc(tag, pageable);
 
@@ -51,8 +56,9 @@ public class BoardService {
 					// 로그인한 멤버(유저)가 게시물에 좋아요(cheer)를 눌렀는지 확인하기 위함. 로그인하지 않은 상태에서는 null
 					Cheer cheer = null;
 					List<Cheer> cheerOnList = new ArrayList<>();
-					if (userId != null) {
-						cheer = cheerRepository.findByMemberIdAndBoardId(userId, board.getId()).orElse(null);
+
+					if (userDto != null) {
+						cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), board.getId()).orElse(null);
 						cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
 					}
 
@@ -71,7 +77,7 @@ public class BoardService {
 	}
 
 	@Transactional
-	public BoardDetailResponse findBoardById(final Long postId) {
+	public BoardDetailResponse findBoardById(final Long postId, final SecurityUserDto userDto) {
 		Board board = boardRepository.findById(postId).orElse(null);
 		if (board == null) {
 			return null;
@@ -86,15 +92,29 @@ public class BoardService {
 		List<CommentListResponse> commentListResponseList = commentService.findCommentList(board);
 		List<Cheer> cheerOnList = cheerRepository.findByBoardIdAndIsOnTrue(board.getId());
 
-		return BoardDetailResponse.of(board, member, commentListResponseList, cheerOnList.size());
+		boolean isOn = true;
+		Cheer cheer = null;
+		if (userDto != null) {
+			cheer = cheerRepository.findByMemberIdAndBoardId(userDto.getId(), board.getId()).orElse(null);
+		}
+		if (cheer == null || cheer.isOn() == false) {
+			isOn = false;
+		}
+
+		return BoardDetailResponse.of(board, member, commentListResponseList, cheerOnList.size(), isOn);
 	}
 
 	@Transactional
 	public PostCreateResponse createPost(
 			final PostCreateRequest postCreateRequest,
-			final List<MultipartFile> multipartFiles
+			final List<MultipartFile> multipartFiles,
+			final SecurityUserDto userDto
 	) {
-		Member member = memberRepository.findById(postCreateRequest.getWriter_id()).orElse(null);
+		if (userDto == null) {
+			return null;
+		}
+
+		Member member = memberRepository.findByEmail(userDto.getEmail()).orElse(null);
 		if (member == null) {
 			return null;
 		}
@@ -122,10 +142,19 @@ public class BoardService {
 	public PostModifyResponse modifyPost(
 			final Long postId,
 			final PostModifyRequest postModifyRequest,
-			final List<MultipartFile> multipartFiles
+			final List<MultipartFile> multipartFiles,
+			final SecurityUserDto userDto
 	) {
+		if (userDto == null) {
+			return null;
+		}
+
 		Board board = boardRepository.findById(postId).orElse(null);
 		if (board == null) {
+			return null;
+		}
+
+		if (board.getMember().getEmail() != userDto.getEmail()) {
 			return null;
 		}
 
@@ -146,9 +175,17 @@ public class BoardService {
 	}
 
 	@Transactional
-	public Board deletePost(final Long postId) {
+	public Board deletePost(final Long postId, final SecurityUserDto userDto) {
+		if (userDto == null) {
+			return null;
+		}
+
 		Board board = boardRepository.findById(postId).orElse(null);
 		if (board == null) {
+			return null;
+		}
+
+		if (board.getMember().getEmail() != userDto.getEmail()) {
 			return null;
 		}
 

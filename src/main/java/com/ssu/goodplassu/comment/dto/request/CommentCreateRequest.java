@@ -11,6 +11,5 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class CommentCreateRequest {
 	private Long board_id;
-	private Long writer_id;
 	private String content;
 }
