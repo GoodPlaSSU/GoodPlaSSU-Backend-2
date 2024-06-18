@@ -60,6 +60,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		Optional<Member> findMember = memberRepository.findByEmail(email);
 
 		if (findMember.isEmpty()) {
+			// 회원이 존재하지 않을경우, memberAttribute의 exist 값을 false로 넣어준다.
+			memberAttribute.put("exist", false);
+
 			// 회원의 권한(기본 권한인 ROLE_USER 설정), 회원 속성, 속성 이름을 이용해 DefaultOAuth2User 객체를 생성해 반환함
 			return new DefaultOAuth2User(
 					Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
@@ -67,6 +70,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 					"email"
 			);
 		}
+		// 회원이 존재할경우, memberAttribute의 exist 값을 true로 넣어준다.
+		memberAttribute.put("exist", true);
 
 		// 회원의 권한, 회원 속성, 속성 이름을 이용해 DefaultOAuth2User 객체를 생성해 반환함
 		return new DefaultOAuth2User(
