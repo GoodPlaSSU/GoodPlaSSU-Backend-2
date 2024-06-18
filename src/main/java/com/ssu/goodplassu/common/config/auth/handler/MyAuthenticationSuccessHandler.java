@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -31,11 +32,14 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 	private String redirectUrl;
 
 	@Override
+	@Transactional
 	public void onAuthenticationSuccess(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			Authentication authentication
 	) throws IOException, ServletException {
+		log.trace("## 로그인 성공 ##");
+
 		// OAuth2User로 캐스팅해서 인증된 사용자 정보를 가져옴
 		OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
@@ -53,7 +57,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
 		// JWT 발행
 		GeneratedToken token = jwtUtil.generateToken(email, role);
-		log.info("JWT = {}", token.getAccessToken());
+		log.trace("## JWT = ", token.getAccessToken());
 
 		// Access Token을 쿼리스트링으로 전달하는 URL 생성
 		String targetUrl = UriComponentsBuilder.fromUriString(redirectUrl)
@@ -62,15 +66,19 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 				.encode(StandardCharsets.UTF_8)
 				.toUriString();
 
-		log.info("Redirect 준비");
+		log.trace("## Redirect 준비 ##");
 
-		memberRepository.save(Member.builder()
-				.name(oAuth2User.getAttribute("name"))
-				.email(email)
-				.portrait(oAuth2User.getAttribute("picture"))
-				.role(Role.USER)
-				.build()
-		);
+		// CustomOAuth2UserService에서 셋팅한 로그인한 회원 존재 여부를 가져온다.
+		boolean isExist = oAuth2User.getAttribute("exist");
+		if (isExist == false) {
+			memberRepository.save(Member.builder()
+					.name(oAuth2User.getAttribute("name"))
+					.email(email)
+					.portrait(oAuth2User.getAttribute("picture"))
+					.role(Role.USER)
+					.build()
+			);
+		}
 
 		// 로그인 확인 페이지로 redirect 시킴
 		getRedirectStrategy().sendRedirect(request, response, targetUrl);
