@@ -29,6 +29,7 @@ public class SecurityConfig {
 	private final JwtExceptionFilter jwtExceptionFilter;
 	private final MyAuthenticationSuccessHandler oAuth2LoginSuccessHandler;
 	private final MyAuthenticationFailureHandler oAuth2LoginFailureHandler;
+	private final JwtFilter jwtFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
@@ -48,18 +49,20 @@ public class SecurityConfig {
 						).permitAll()
 						.anyRequest().authenticated()
 				)
-				.oauth2Login(oauth -> oauth		// OAuth2 로그인을 위한 설정. 이 설정을 통해 소셜 로그인이 가능해짐
-						.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))	// 소셜 로그인 성공 후 사용자 정보를 가져오는 서비스를 지정. 필요한 사용자 정보를 데이터베이스에 저장하거나 업데이트함
-						.failureHandler(oAuth2LoginFailureHandler)		// 로그인 실패 핸들러
-						.successHandler(oAuth2LoginSuccessHandler)		// 로그인 성공 핸들러
-				);
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+		;
+//				.oauth2Login(oauth -> oauth		// OAuth2 로그인을 위한 설정. 이 설정을 통해 소셜 로그인이 가능해짐
+//						.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))	// 소셜 로그인 성공 후 사용자 정보를 가져오는 서비스를 지정. 필요한 사용자 정보를 데이터베이스에 저장하거나 업데이트함
+//						.failureHandler(oAuth2LoginFailureHandler)		// 로그인 실패 핸들러
+//						.successHandler(oAuth2LoginSuccessHandler)		// 로그인 성공 핸들러
+//				);
 
 		// JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가. 요청 헤더에 포함된 JWT를 검증하여 사용자를 인증하는 역할
 		//  UsernamePasswordAuthenticationFilter는 인증되지 않은 사용자의 경우 로그인 페이지로 redirect 시킴
 		//  따라서 JWT 토큰을 검증하고, 토큰의 정보를 이용해서 인증 객체를 SecurityContext에 넣어주어야 인증이 되었다고 판단하여 로그인 페이지로 redirect 하지 않음
-		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-		http.addFilterBefore(jwtExceptionFilter, JwtAuthFilter.class);
+//		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//		http.addFilterBefore(jwtExceptionFilter, JwtAuthFilter.class);
 
 		return http.build();
 	}
