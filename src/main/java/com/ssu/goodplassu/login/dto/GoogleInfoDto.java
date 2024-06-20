@@ -1,12 +1,14 @@
 package com.ssu.goodplassu.login.dto;
 
 import com.ssu.goodplassu.member.entity.Role;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class GoogleInfoDto {
 	private String email;

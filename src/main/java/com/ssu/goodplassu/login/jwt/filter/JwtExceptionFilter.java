@@ -1,4 +1,4 @@
-package com.ssu.goodplassu.common.config.auth.jwt.filter;
+package com.ssu.goodplassu.login.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssu.goodplassu.common.dto.ResponseDto;

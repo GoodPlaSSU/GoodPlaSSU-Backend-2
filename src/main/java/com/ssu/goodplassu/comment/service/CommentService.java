@@ -7,7 +7,7 @@ import com.ssu.goodplassu.comment.dto.response.CommentCreateResponse;
 import com.ssu.goodplassu.comment.dto.response.CommentListResponse;
 import com.ssu.goodplassu.comment.entity.Comment;
 import com.ssu.goodplassu.comment.repository.CommentRepository;
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

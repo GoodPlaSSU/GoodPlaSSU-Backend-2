@@ -1,4 +1,4 @@
-package com.ssu.goodplassu.common.config.auth.dto;
+package com.ssu.goodplassu.login.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

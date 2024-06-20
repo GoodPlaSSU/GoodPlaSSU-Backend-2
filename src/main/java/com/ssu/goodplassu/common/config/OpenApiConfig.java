@@ -1,6 +1,6 @@
 package com.ssu.goodplassu.common.config;
 
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;

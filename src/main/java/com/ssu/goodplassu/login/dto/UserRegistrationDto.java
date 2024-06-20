@@ -2,12 +2,14 @@ package com.ssu.goodplassu.login.dto;
 
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.entity.Role;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserRegistrationDto {
 	private String email;
@@ -20,6 +22,7 @@ public class UserRegistrationDto {
 				.email(email)
 				.name(name)
 				.portrait(picture)
+				.role(role)
 				.build();
 	}
 }
