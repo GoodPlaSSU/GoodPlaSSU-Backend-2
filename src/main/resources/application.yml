@@ -19,5 +19,5 @@ logging:
   level:
     root: INFO
     sql: DEBUG
-    org.springframework.web: TRACE
-    com.ssu.goodplassu: TRACE
+    org.springframework.web: INFO
+    com.ssu.goodplassu: DEBUG

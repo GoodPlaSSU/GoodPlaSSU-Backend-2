@@ -5,7 +5,7 @@ import com.ssu.goodplassu.board.repository.BoardRepository;
 import com.ssu.goodplassu.cheer.dto.response.CheerUpdateResponse;
 import com.ssu.goodplassu.cheer.entity.Cheer;
 import com.ssu.goodplassu.cheer.repository.CheerRepository;
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
