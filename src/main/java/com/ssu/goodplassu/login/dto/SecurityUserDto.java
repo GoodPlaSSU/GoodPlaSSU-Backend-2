@@ -1,4 +1,4 @@
-package com.ssu.goodplassu.common.config.auth.dto;
+package com.ssu.goodplassu.login.dto;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import lombok.*;
 public class SecurityUserDto {
 	private Long id;
 	private String email;
-	private String nickname;
+	private String name;
 	private String picture;
 	private String role;
 }

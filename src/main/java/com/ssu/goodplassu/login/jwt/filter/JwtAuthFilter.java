@@ -1,7 +1,7 @@
-package com.ssu.goodplassu.common.config.auth.jwt.filter;
+package com.ssu.goodplassu.login.jwt.filter;
 
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
-import com.ssu.goodplassu.common.config.auth.jwt.JwtUtil;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.jwt.util.JwtUtil;
 import com.ssu.goodplassu.member.entity.Member;
 import com.ssu.goodplassu.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
@@ -28,7 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return request.getRequestURI().contains("/token/refresh");
+		return request.getRequestURI().contains("/api/auth/refresh");
 	}
 
 	@Override
@@ -40,6 +40,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		if (!StringUtils.hasText(accessToken)) {
 			doFilter(request, response, filterChain);
 			return;
+		}
+
+		if (accessToken != null && accessToken.startsWith("Bearer ")) {
+			accessToken = accessToken.substring(7);
 		}
 
 		// Access Token 검증, 만료되었을 경우 예외 발생
@@ -57,8 +61,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			SecurityUserDto securityUserDto = SecurityUserDto.builder()
 					.id(findMember.getId())
 					.email(findMember.getEmail())
+					.name(findMember.getName())
+					.picture(findMember.getPortrait())
 					.role(findMember.getRoleKey())
-					.nickname(findMember.getName())
 					.build();
 
 			// Security Context에 인증 객체 등록

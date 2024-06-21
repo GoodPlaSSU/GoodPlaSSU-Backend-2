@@ -1,74 +1,59 @@
-package com.ssu.goodplassu.common.config.auth.jwt;
+package com.ssu.goodplassu.login.jwt.util;
 
-import com.ssu.goodplassu.common.config.auth.dto.GeneratedToken;
-import com.ssu.goodplassu.common.config.auth.service.RefreshTokenService;
+import com.ssu.goodplassu.login.dto.GeneratedToken;
+import com.ssu.goodplassu.login.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class JwtUtil {
-	private final JwtProperties jwtProperties;
-	private final RefreshTokenService tokenService;
+	private final RefreshTokenService refreshTokenService;
+	@Value("${spring.jwt.secret}")
 	private String secretKey;
-
-	@PostConstruct
-	protected void init() {
-		secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
-	}
 
 	public GeneratedToken generateToken(String email, String role) {
 		// Refresh Token과 Access Token 생성
 		String refreshToken = generateRefreshToken(email, role);
 		String accessToken = generateAccessToken(email, role);
 
-		// 토큰을 Redis에 저장
-		tokenService.saveTokenInfo(email, refreshToken, accessToken);
+		refreshTokenService.saveTokenInfo(email, refreshToken, accessToken);
 
 		return new GeneratedToken(accessToken, refreshToken);
 	}
 
 	public String generateRefreshToken(String email, String role) {
 		// 토큰의 유효 기간을 밀리 초 단위로 설정
-		long refreshPeriod = 1000L * 60L * 60L * 24L * 7;	// 1주
+		long refreshPeriod = 1000L * 60L * 60L * 24L;	// 1일
 
+		return generateJwtsWithPeriod(email, role, refreshPeriod);
+	}
+
+	public String generateAccessToken(String email, String role) {
+		long accessPeriod = 1000L * 60L * 10L;	// 10분
+
+		return generateJwtsWithPeriod(email, role, accessPeriod);
+	}
+
+	private String generateJwtsWithPeriod(String email, String role, long period) {
 		// 새로운 클레임 객체를 생성하고 email과 role 설정
 		Claims claims = Jwts.claims();
 		claims.put("email", email);
 		claims.put("role", role);
 
-		// 현재 시간과 날짜 불러옴
 		Date now = new Date();
 
 		return Jwts.builder()
 				.setClaims(claims)	// Payload를 구성하는 속성 정의
 				.setIssuedAt(now)	// 발행 일자
-				.setExpiration(new Date(now.getTime() + refreshPeriod))	// 만료 일자
-				.signWith(SignatureAlgorithm.RS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
-				.compact();
-	}
-
-	public String generateAccessToken(String email, String role) {
-		long accessPeriod = 1000L * 60L * 60L;	// 1시간
-
-		Claims claims = Jwts.claims();
-		claims.put("email", email);
-		claims.put("role", role);
-
-		Date now = new Date();
-
-		return Jwts.builder()
-				.setClaims(claims)	// Payload를 구성하는 속성 정의
-				.setIssuedAt(now)	// 발행 일자
-				.setExpiration(new Date(now.getTime() + accessPeriod))	// 만료 일자
+				.setExpiration(new Date(now.getTime() + period))	// 만료 일자
 				.signWith(SignatureAlgorithm.RS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
 				.compact();
 	}

@@ -1,6 +1,6 @@
-package com.ssu.goodplassu.common.config.auth.util;
+package com.ssu.goodplassu.login.util;
 
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
