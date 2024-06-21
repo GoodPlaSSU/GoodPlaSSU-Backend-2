@@ -1,8 +1,8 @@
 package com.ssu.goodplassu.member.controller;
 
-import com.ssu.goodplassu.common.config.auth.dto.SecurityUserDto;
-import com.ssu.goodplassu.common.config.auth.util.SecurityUtils;
 import com.ssu.goodplassu.common.dto.ResponseDto;
+import com.ssu.goodplassu.login.dto.SecurityUserDto;
+import com.ssu.goodplassu.login.util.SecurityUtils;
 import com.ssu.goodplassu.member.dto.response.HighestMonthPointResponse;
 import com.ssu.goodplassu.member.dto.response.HighestTotalPointResponse;
 import com.ssu.goodplassu.member.dto.response.MemberInfoResponse;
@@ -122,6 +122,31 @@ public class MemberController implements MemberApi {
 				new ResponseDto<>(
 						HttpStatus.OK.value(),
 						"사용자가 댓글을 작성한 게시물 리스트를 불러왔습니다.",
+						memberPostListResponseList
+				)
+		);
+	}
+
+	@GetMapping("/likes/posts")
+	public ResponseEntity<?> getMemberLikePosts(@RequestParam(value = "page", defaultValue = "0") int page) {
+		SecurityUserDto userDto = SecurityUtils.getUser();
+
+		Page<MemberPostListResponse> memberPostListResponseList = memberService.getMemberLikePosts(page, userDto);
+		if (memberPostListResponseList == null) {
+			return new ResponseEntity<>(
+					new ResponseDto<>(
+							HttpStatus.BAD_REQUEST.value(),
+							"사용자가 좋아요를 누를 게시물 리스트 조회에 실패했습니다.",
+							List.of()
+					),
+					HttpStatus.BAD_REQUEST
+			);
+		}
+
+		return ResponseEntity.ok(
+				new ResponseDto<>(
+						HttpStatus.OK.value(),
+						"사용자가 좋아요를 누른 게시물 리스트를 불러왔습니다.",
 						memberPostListResponseList
 				)
 		);
