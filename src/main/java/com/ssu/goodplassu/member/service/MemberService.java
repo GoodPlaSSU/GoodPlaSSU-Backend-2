@@ -120,4 +120,9 @@ public class MemberService {
 
 		return new PageImpl<>(memberPostListResponseList, pageable, boardList.getTotalElements());
 	}
+
+	@Transactional
+	public void resetMonthPointAllMembers() {
+		memberRepository.resetAllMonthPoints();
+	}
 }
