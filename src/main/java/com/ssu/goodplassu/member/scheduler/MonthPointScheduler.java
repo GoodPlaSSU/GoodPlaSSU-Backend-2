@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class MonthPointScheduler {
 	private final MemberService memberService;
 
-	@Scheduled(cron = "0 0 0 24 * ?") // 매달 24일 자정에 실행, 초 분 시 일 월 요일
+	@Scheduled(cron = "0 0 9 1 * ?") // 매달 1일 자정에 실행, 초 분 시 일 월 요일
 	public void scheduleResetMonthlyPoints() {
 		memberService.resetMonthPointAllMembers();
 	}
