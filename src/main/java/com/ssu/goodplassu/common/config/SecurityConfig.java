@@ -33,8 +33,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(a -> a	// 요청에 대한 접근 제어 설정
 								.requestMatchers(new AntPathRequestMatcher("/api/boards/**", HttpMethod.POST.name())).hasRole(Role.USER.name())
 								.requestMatchers(new AntPathRequestMatcher("/api/boards/**", HttpMethod.DELETE.name())).hasRole(Role.USER.name())
-								.requestMatchers("/api/comments/**").hasRole(Role.USER.name())
-								.requestMatchers("/api/cheers/**").hasRole(Role.USER.name())
+								.requestMatchers("/openapi/comments/**").hasRole(Role.USER.name())
+								.requestMatchers("/openapi/cheers/**").hasRole(Role.USER.name())
 								.requestMatchers(
 								new MvcRequestMatcher(introspector, "/h2-console/**"),
 								new AntPathRequestMatcher("/**")
