@@ -364,7 +364,7 @@ public interface MemberApi {
 											"        \"like_count\": 1,\n" +
 											"        \"updated_at\": \"2024-06-20T16:47:55.3285\",\n" +
 											"        \"comment_count\": 1\n" +
-											"      },\n" +
+											"      }\n" +
 											"    ],\n" +
 											"    \"pageable\": {\n" +
 											"      \"pageNumber\": 0,\n" +
@@ -379,7 +379,7 @@ public interface MemberApi {
 											"      \"unpaged\": false\n" +
 											"    },\n" +
 											"    \"last\": true,\n" +
-											"    \"totalElements\": 8,\n" +
+											"    \"totalElements\": 2,\n" +
 											"    \"totalPages\": 1,\n" +
 											"    \"first\": true,\n" +
 											"    \"size\": 10,\n" +
@@ -389,7 +389,7 @@ public interface MemberApi {
 											"      \"unsorted\": true,\n" +
 											"      \"sorted\": false\n" +
 											"    },\n" +
-											"    \"numberOfElements\": 8,\n" +
+											"    \"numberOfElements\": 2,\n" +
 											"    \"empty\": false\n" +
 											"  }\n" +
 											"}"
