@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtUtil {
 	private final RefreshTokenService refreshTokenService;
 	@Value("${spring.jwt.secret}")
@@ -31,13 +33,13 @@ public class JwtUtil {
 
 	public String generateRefreshToken(String email, String role) {
 		// 토큰의 유효 기간을 밀리 초 단위로 설정
-		long refreshPeriod = 1000L * 60L * 60L * 24L;	// 1일
+		long refreshPeriod = 1000L * 60L * 60L * 24L * 7L;	// 일주일
 
 		return generateJwtsWithPeriod(email, role, refreshPeriod);
 	}
 
 	public String generateAccessToken(String email, String role) {
-		long accessPeriod = 1000L * 60L * 10L;	// 10분
+		long accessPeriod = 1000L * 60L * 60L * 24L * 2L;	// 2일
 
 		return generateJwtsWithPeriod(email, role, accessPeriod);
 	}
@@ -54,7 +56,7 @@ public class JwtUtil {
 				.setClaims(claims)	// Payload를 구성하는 속성 정의
 				.setIssuedAt(now)	// 발행 일자
 				.setExpiration(new Date(now.getTime() + period))	// 만료 일자
-				.signWith(SignatureAlgorithm.RS256, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
+				.signWith(SignatureAlgorithm.HS512, secretKey)	// 지정된 서명 알고리즘과 비밀키를 사용해 토큰 서명
 				.compact();
 	}
 
@@ -69,6 +71,7 @@ public class JwtUtil {
 					.getExpiration()
 					.after(new Date());		// 만료 시간이 현재 시간 이후인지 확인해서 유효성 검사 결과 반환
 		} catch (Exception e) {
+			log.debug("### JWT Verify Token : false, " + e.getMessage());
 			return false;
 		}
 	}

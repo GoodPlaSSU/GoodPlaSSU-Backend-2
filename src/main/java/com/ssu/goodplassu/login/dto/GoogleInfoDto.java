@@ -1,15 +1,14 @@
 package com.ssu.goodplassu.login.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssu.goodplassu.member.entity.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GoogleInfoDto {
 	private String email;
 	private String name;

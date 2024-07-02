@@ -1,6 +1,10 @@
 package com.ssu.goodplassu.login.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.ssu.goodplassu.login.dto.GeneratedToken;
 import com.ssu.goodplassu.login.dto.GoogleInfoDto;
 import com.ssu.goodplassu.login.dto.UserRegistrationDto;
@@ -15,16 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Slf4j
 public class AuthService {
-	private final WebClient webClient;
 	@Value("${spring.security.oauth2.client.registration.google.client-id}")
 	private String clientId;
 	@Value("${spring.security.oauth2.client.registration.google.client-secret}")
@@ -35,47 +42,53 @@ public class AuthService {
 	private String tokenUri;
 	@Value("${spring.security.oauth2.client.registration.google.user-info}")
 	private String userUri;
-	@Value("${spring.security.oauth2.client.registration.google.authorization-grant-type}")
-	private String grantType;
 	private final MemberRepository memberRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public AuthTokenResponse getAccessTokenFromGoogle(String code) {
-		WebClient.ResponseSpec responseSpec = webClient.post()
-				.uri(uriBuilder -> uriBuilder.path(tokenUri)
-						.queryParam("client_id", clientId)
-						.queryParam("client_secret", clientSecret)
-						.queryParam("code", code)
-						.queryParam("grant_type", grantType)
-						.queryParam("redirect_uri", redirectUri)
-						.build()
-				).retrieve();
+	public AuthTokenResponse getAccessTokenFromGoogle(String code) throws IOException, InterruptedException {
+		log.debug("======== Authorization Code : " + code);
 
-		String accessToken = responseSpec.bodyToMono(GoogleTokenResponse.class)
-				.map(response -> response.getAccessToken())
-				.block();
+		GoogleTokenResponse googleTokenResponse = new GoogleAuthorizationCodeTokenRequest(
+				new NetHttpTransport(),
+				new JacksonFactory(),
+				tokenUri,
+				clientId,
+				clientSecret,
+				code,
+				redirectUri)
+				.execute();
+		String accessToken = googleTokenResponse.getAccessToken();
+		log.debug("======== Access Token : " + googleTokenResponse.getAccessToken());
 
-		Mono<GoogleInfoDto> googleInfoDtoMono = getMemberInfoFromGoogle(accessToken);
-		UserRegistrationDto userRegistrationDto = googleInfoDtoMono.block().toUserRegistrationDto();
+		GoogleInfoDto googleInfoDto = getMemberInfoFromGoogle(accessToken);
+		UserRegistrationDto userRegistrationDto = googleInfoDto.toUserRegistrationDto();
 
 		GeneratedToken generatedToken = jwtUtil.generateToken(userRegistrationDto.getEmail(), userRegistrationDto.getRole().getKey());
 
 		saveMemberInfoFromGoogle(userRegistrationDto);
 
 		log.debug("======== JWT : " + generatedToken.getAccessToken());
-		log.debug("======== User Info(Email) : " + userRegistrationDto.getEmail());
 
 		return AuthTokenResponse.of(generatedToken.getAccessToken());
 	}
 
-	private Mono<GoogleInfoDto> getMemberInfoFromGoogle(String accessToken) {
-		return webClient.get()
-				.uri(userUri)
-				.headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
-				.retrieve()
-				.bodyToMono(GoogleInfoDto.class);
+	private GoogleInfoDto getMemberInfoFromGoogle(String accessToken) throws IOException, InterruptedException {
+		HttpClient httpClient = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(userUri))
+				.header("Authorization", "Bearer " + accessToken)  // 액세스 토큰을 헤더에 추가
+				.build();
+
+		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+		ObjectMapper mapper = new ObjectMapper();
+		GoogleInfoDto googleInfoDto = mapper.readValue(response.body(), GoogleInfoDto.class);
+		log.debug("======== User Info(Email) : " + googleInfoDto.getEmail());
+
+		return googleInfoDto;
 	}
 
 	private void saveMemberInfoFromGoogle(UserRegistrationDto userRegistrationDto) {

@@ -18,6 +18,6 @@ spring:
 logging:
   level:
     root: INFO
-    sql: DEBUG
+#    sql: DEBUG
     org.springframework.web: INFO
     com.ssu.goodplassu: DEBUG

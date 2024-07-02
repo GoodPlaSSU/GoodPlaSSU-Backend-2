@@ -7,6 +7,7 @@ import com.ssu.goodplassu.common.dto.ResponseDto;
 import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import com.ssu.goodplassu.login.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +20,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cheers")
+@Slf4j
 public class CheerController implements CheerApi {
 	private final CheerService cheerService;
 
 	@PostMapping("/{postId}")
 	public ResponseEntity<?> setCheerOnOff(@PathVariable("postId") final Long postId) {
 		SecurityUserDto userDto = SecurityUtils.getUser();
+		log.debug(">>>>> Cheer Controller - User : " + userDto.getEmail());
 
 		CheerUpdateResponse cheerUpdateResponse = cheerService.setCheerOnOff(postId, userDto);
 		if (cheerUpdateResponse == null) {

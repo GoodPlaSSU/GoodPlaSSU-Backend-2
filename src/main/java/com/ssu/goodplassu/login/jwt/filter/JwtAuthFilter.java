@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,13 +23,15 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtUtil;
 	private final MemberRepository memberRepository;
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return request.getRequestURI().contains("/api/auth/refresh");
+		String uri = request.getRequestURI();
+		return uri.contains("/api/auth/refresh") || uri.contains("/api/auth/google");
 	}
 
 	@Override
@@ -51,6 +54,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			throw new RuntimeException("Access Token 만료됨");
 		}
 
+		log.debug("======= Auth Filter : " + accessToken);
+
 		// Access Token의 값이 있고, 유효한 경우
 		if (jwtUtil.verifyToken(accessToken)) {
 			// Access Token 내부의 Payload에 있는 email로 사용자 조회. 없으면 예외 발생
@@ -65,6 +70,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 					.picture(findMember.getPortrait())
 					.role(findMember.getRoleKey())
 					.build();
+
+			log.debug("======= Security User : " + securityUserDto.getEmail());
 
 			// Security Context에 인증 객체 등록
 			Authentication authentication = getAuthentication(securityUserDto);
