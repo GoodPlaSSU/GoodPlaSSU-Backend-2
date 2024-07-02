@@ -33,11 +33,9 @@ public class Member {
 		this.monthPoint++;
 	}
 
-	public Member update(String name, String portrait) {
+	public void updateInfo(String name, String portrait) {
 		this.name = name;
 		this.portrait = portrait;
-
-		return this;
 	}
 
 	public String getRoleKey() {

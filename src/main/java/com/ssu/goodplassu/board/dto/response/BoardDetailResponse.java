@@ -22,14 +22,14 @@ public class BoardDetailResponse {
 	private final String content;
 	private final ImagesResponse images;
 	private final LocalDateTime updated_at;
-	private final int like_count;
+	private final long like_count;
 	private final List<CommentListResponse> comments;
 	private final boolean like_on;
 
 	public static BoardDetailResponse of(
 			final Board board, final Member member,
 			final List<CommentListResponse> commentListResponseList,
-			final int cheerCnt,
+			final long cheerCnt,
 			final boolean isOn
 	) {
 		return new BoardDetailResponse(
