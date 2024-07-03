@@ -62,6 +62,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
 					.orElseThrow(() -> new IllegalStateException());
 
+			log.debug("======= Access Token Verified Member : " + findMember.getEmail());
+
 			// Security Context에 등록할 User 객체 생성
 			SecurityUserDto securityUserDto = SecurityUserDto.builder()
 					.id(findMember.getId())
