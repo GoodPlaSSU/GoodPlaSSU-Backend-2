@@ -1,20 +1,10 @@
 package com.ssu.goodplassu.common.config;
 
-import com.ssu.goodplassu.login.dto.SecurityUserDto;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
-import jakarta.servlet.*;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.io.IOException;
-import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -29,6 +19,7 @@ public class OpenApiConfig {
 				;
 	}
 
+/*
 	@Bean
 	public FilterRegistrationBean<Filter> testSecurityContextFilter() {
 		return new FilterRegistrationBean<>(new Filter() {
@@ -57,4 +48,5 @@ public class OpenApiConfig {
 			}
 		});
 	}
+*/
 }

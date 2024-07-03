@@ -66,6 +66,9 @@ public class JwtUtil {
 					.setSigningKey(secretKey)	// 비밀키를 설정해 파싱
 					.parseClaimsJws(token);		// 주어진 토큰을 파싱해서 Claims 객체 얻음
 
+			log.debug("### JWT claims email : " + claims.getBody().get("email"));
+			log.debug("### JWT claims compare date : " + claims.getBody().getExpiration() + " | " + new Date());
+
 			// 토큰의 만료 시간과 현재 시간 비교
 			return claims.getBody()
 					.getExpiration()
@@ -80,7 +83,7 @@ public class JwtUtil {
 		// 토큰에서 email 추출
 		return Jwts.parser().setSigningKey(secretKey)
 				.parseClaimsJws(token)
-				.getBody().getSubject();
+				.getBody().get("email", String.class);
 	}
 
 	public String getRole(String token) {
