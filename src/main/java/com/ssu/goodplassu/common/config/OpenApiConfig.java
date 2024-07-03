@@ -1,7 +1,10 @@
 package com.ssu.goodplassu.common.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +19,15 @@ public class OpenApiConfig {
 						.title("GoodPlaSSU API")
 						.version("1.0")
 						.description("GoodPlaSSU API with SpringDoc OpenAPI 3"))
-				;
+				.addSecurityItem(new SecurityRequirement().addList("Authorization"))
+				.components(new Components()
+						.addSecuritySchemes("Authorization", new SecurityScheme()
+								.type(SecurityScheme.Type.HTTP)
+								.scheme("Bearer")
+								.bearerFormat("JWT")
+								.in(SecurityScheme.In.HEADER)
+						)
+				);
 	}
 
 /*
